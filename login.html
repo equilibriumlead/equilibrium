@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EQUILIBRIUM — Acceso</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #1a2744;
+      --navy-dark:  #111b30;
+      --gold:       #C9A84C;
+      --gold-light: #e8c97a;
+      --gold-muted: #9a7e38;
+      --white:      #ffffff;
+      --gray-soft:  rgba(255,255,255,0.06);
+      --border:     rgba(255,255,255,0.10);
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: var(--navy-dark);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    /* FONDO CON PATRÓN SUTIL */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201,168,76,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 100% 100%, rgba(26,39,68,0.8) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .login-wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    /* LOGO */
+    .logo-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-mark {
+      width: 64px;
+      height: 64px;
+      border: 1.5px solid var(--gold);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-mark svg { width: 38px; height: 38px; }
+
+    .logo-text {
+      text-align: center;
+    }
+
+    .logo-eq {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.12em;
+      display: block;
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      display: block;
+      margin-top: 4px;
+    }
+
+    /* CARD */
+    .login-card {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--white);
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      opacity: 0.5;
+    }
+
+    /* BOTÓN GOOGLE */
+    .btn-google {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 14px 20px;
+      background: var(--white);
+      color: #1a1a1a;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-google:hover {
+      background: #f0f0f0;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+    }
+
+    .btn-google:active { transform: translateY(0); }
+
+    .btn-google:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .google-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    /* ESTADO DE CARGA */
+    .loading-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+    }
+
+    .loading-state.visible { display: flex; }
+
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 2px solid rgba(201,168,76,0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* MENSAJE DE ERROR */
+    .error-msg {
+      display: none;
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(220,50,50,0.1);
+      border: 0.5px solid rgba(220,50,50,0.3);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #ff8080;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .error-msg.visible { display: block; }
+
+    /* FOOTER */
+    .login-footer {
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+      text-align: center;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-wrapper">
+
+    <!-- LOGO -->
+    <div class="logo-block">
+      <div class="logo-mark">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="16" stroke="#C9A84C" stroke-width="1.5"/>
+          <line x1="20" y1="4" x2="20" y2="36" stroke="#C9A84C" stroke-width="1.5"/>
+          <path d="M20 4 C11 12 11 28 20 36" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-eq">EQUILIBRIUM</span>
+        <span class="logo-sub">Academia Virtual</span>
+      </div>
+    </div>
+
+    <!-- CARD -->
+    <div class="login-card">
+      <div class="card-title">Bienvenido al programa<br>de certificación</div>
+      <div class="divider"></div>
+      <div class="card-desc">Inicia sesión con tu cuenta Google para acceder a tus módulos, materiales y evaluación 360°.</div>
+
+      <!-- Error -->
+      <div class="error-msg" id="errorMsg"></div>
+
+      <!-- Botón Google -->
+      <button class="btn-google" id="btnGoogle" onclick="loginConGoogle()">
+        <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Ingresar con Google
+      </button>
+
+      <!-- Loading -->
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loadingText">Verificando acceso...</div>
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="login-footer">
+      Solo pueden acceder participantes registrados.<br>
+      ¿Problemas de acceso? Contacta a tu facilitador.
+    </div>
+
+  </div>
+
+  <!-- FIREBASE -->
+  <script type="module">
+    import { initializeApp }        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged }
+                                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey:            "AIzaSyB1jm5zLE4qz6U6NWCwSCJot_MP0TjbI-M",
+      authDomain:        "equilibrium-academia-70e6f.firebaseapp.com",
+      projectId:         "equilibrium-academia-70e6f",
+      storageBucket:     "equilibrium-academia-70e6f.firebasestorage.app",
+      messagingSenderId: "432414897669",
+      appId:             "1:432414897669:web:4c817a7f128f9999f4ce6c"
+    };
+
+    const API = "https://script.google.com/macros/s/AKfycbz5FJOZxyoVzIAmimPojjgeasl_IiBRLtkJ8LTtq46Fglqjx-9zOvIIJHBpayoN1ruL/exec";
+
+    const app      = initializeApp(firebaseConfig);
+    const auth     = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    // Si ya hay sesión activa, redirige directo al portal
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        mostrarCarga("Verificando acceso...");
+        await verificarYRedirigir(user.email);
+      }
+    });
+
+    // Login con popup de Google
+    window.loginConGoogle = async function() {
+      ocultarError();
+      mostrarCarga("Conectando con Google...");
+      desactivarBoton(true);
+
+      try {
+        const result = await signInWithPopup(auth, provider);
+        mostrarCarga("Verificando acceso...");
+        await verificarYRedirigir(result.user.email);
+      } catch (err) {
+        desactivarBoton(false);
+        ocultarCarga();
+        if (err.code !== "auth/popup-closed-by-user") {
+          mostrarError("No se pudo completar el inicio de sesión. Intenta de nuevo.");
+        }
+      }
+    };
+
+    // Verifica en Sheets si el email tiene acceso
+    async function verificarYRedirigir(email) {
+      try {
+        const url  = `${API}?action=getParticipante&email=${encodeURIComponent(email)}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        if (data.acceso === true) {
+          // Guarda email en sessionStorage para uso del portal
+          sessionStorage.setItem("eq_email", email);
+          sessionStorage.setItem("eq_rol",   data.rol || "participante");
+          window.location.href = "portal.html";
+        } else {
+          await auth.signOut();
+          ocultarCarga();
+          desactivarBoton(false);
+          const motivo = data.motivo === "Acceso desactivado"
+            ? "Tu acceso ha sido desactivado. Contacta a tu facilitador."
+            : "Tu cuenta no está registrada en este programa. Contacta a tu facilitador.";
+          mostrarError(motivo);
+        }
+      } catch (err) {
+        ocultarCarga();
+        desactivarBoton(false);
+        mostrarError("Error al verificar acceso. Intenta de nuevo.");
+      }
+    }
+
+    function mostrarCarga(texto) {
+      document.getElementById("loadingText").textContent = texto;
+      document.getElementById("loadingState").classList.add("visible");
+      document.getElementById("btnGoogle").style.display = "none";
+    }
+
+    function ocultarCarga() {
+      document.getElementById("loadingState").classList.remove("visible");
+      document.getElementById("btnGoogle").style.display = "flex";
+    }
+
+    function mostrarError(msg) {
+      const el = document.getElementById("errorMsg");
+      el.textContent = msg;
+      el.classList.add("visible");
+    }
+
+    function ocultarError() {
+      document.getElementById("errorMsg").classList.remove("visible");
+    }
+
+    function desactivarBoton(estado) {
+      document.getElementById("btnGoogle").disabled = estado;
+    }
+  </script>
+
+</body>
+</html>
