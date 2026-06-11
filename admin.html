@@ -463,8 +463,8 @@
       apiFetch("getModulos"),
       apiFetch("getParticipantes")
     ]);
-    cache.modulos       = modulos       || [];
-    cache.participantes = participantes || [];
+ cache.modulos       = Array.isArray(modulos)       ? modulos       : [];
+ cache.participantes = Array.isArray(participantes) ? participantes : [];
     renderModulos();
     renderParticipantes();
     poblarSelectModulos();
