@@ -10,113 +10,125 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --navy: #1a2744; --navy-dark: #111b30; --navy-light: #243358;
-      --gold: #C9A84C; --gold-muted: #9a7e38; --gold-light: #e8c97a;
-      --text-main: #1a2744; --text-sec: #5a6a8a;
-      --bg: #f4f6fb; --bg-card: #fff; --border: #e2e8f0;
-      --header-h: 56px; --sidebar-w: 220px;
-      --green: #0F6E56; --red: #A32D2D;
+      --navy:#1a2744; --navy-dark:#111b30; --navy-light:#243358;
+      --gold:#C9A84C; --gold-muted:#9a7e38;
+      --text-main:#1a2744; --text-sec:#5a6a8a;
+      --bg:#f4f6fb; --bg-card:#fff; --border:#e2e8f0;
+      --header-h:56px; --sidebar-w:220px;
+      --green:#0F6E56; --red:#A32D2D;
     }
-    html,body { height:100%; font-family:'Inter',sans-serif; background:var(--bg); color:var(--text-main); }
+    html,body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text-main); }
 
     /* HEADER */
-    .header { position:fixed; top:0; left:0; right:0; height:var(--header-h); background:var(--navy); display:flex; align-items:center; padding:0 20px; gap:14px; z-index:100; }
-    .logo-block { display:flex; align-items:center; gap:10px; flex:1; }
-    .logo-mark { width:34px; height:34px; border:1.5px solid var(--gold); border-radius:7px; display:flex; align-items:center; justify-content:center; }
+    .header { position:fixed; top:0; left:0; right:0; height:var(--header-h); background:var(--navy); display:flex; align-items:center; padding:0 16px; gap:12px; z-index:200; }
+    .logo-block { display:flex; align-items:center; gap:10px; flex:1; min-width:0; }
+    .logo-mark { width:34px; height:34px; border:1.5px solid var(--gold); border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     .logo-mark svg { width:20px; height:20px; }
-    .logo-eq { font-family:'Cormorant Garamond',serif; font-size:16px; font-weight:600; color:var(--gold); letter-spacing:.08em; }
-    .logo-sub { font-size:9px; color:rgba(255,255,255,.45); letter-spacing:.14em; text-transform:uppercase; display:block; margin-top:2px; }
-    .admin-badge { background:rgba(201,168,76,.2); border:0.5px solid var(--gold); color:var(--gold); font-size:11px; padding:3px 10px; border-radius:12px; }
-    .header-right { display:flex; align-items:center; gap:12px; }
-    .btn-portal { display:flex; align-items:center; gap:6px; color:rgba(255,255,255,.65); font-size:13px; background:none; border:0.5px solid rgba(255,255,255,.2); border-radius:6px; padding:5px 12px; cursor:pointer; font-family:'Inter',sans-serif; text-decoration:none; transition:all .15s; }
-    .btn-portal:hover { color:#fff; border-color:rgba(255,255,255,.5); }
+    .logo-eq { font-family:'Cormorant Garamond',serif; font-size:15px; font-weight:600; color:var(--gold); letter-spacing:.08em; }
+    .logo-sub { font-size:9px; color:rgba(255,255,255,.45); letter-spacing:.12em; text-transform:uppercase; display:block; margin-top:1px; }
+    .admin-badge { background:rgba(201,168,76,.2); border:0.5px solid var(--gold); color:var(--gold); font-size:10px; padding:2px 8px; border-radius:10px; flex-shrink:0; }
+    .btn-portal { display:flex; align-items:center; gap:5px; color:rgba(255,255,255,.65); font-size:12px; background:none; border:0.5px solid rgba(255,255,255,.2); border-radius:6px; padding:5px 10px; cursor:pointer; font-family:'Inter',sans-serif; text-decoration:none; transition:all .15s; white-space:nowrap; flex-shrink:0; }
+    .btn-portal:hover { color:#fff; }
+    .btn-menu { background:none; border:none; color:rgba(255,255,255,.7); cursor:pointer; padding:4px; display:flex; align-items:center; font-size:22px; flex-shrink:0; }
 
-    /* LAYOUT */
-    .layout { display:flex; padding-top:var(--header-h); height:100vh; }
+    /* SIDEBAR OVERLAY */
+    .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:150; }
+    .sidebar-overlay.open { display:block; }
 
     /* SIDEBAR */
-    .sidebar { width:var(--sidebar-w); flex-shrink:0; background:var(--navy-dark); position:fixed; top:var(--header-h); bottom:0; left:0; overflow-y:auto; padding:20px 0; }
+    .sidebar { width:var(--sidebar-w); background:var(--navy-dark); position:fixed; top:var(--header-h); bottom:0; left:0; overflow-y:auto; padding:20px 0; z-index:160; transform:translateX(-100%); transition:transform .25s ease; display:flex; flex-direction:column; }
+    .sidebar.open { transform:translateX(0); }
     .sidebar-section { font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:rgba(255,255,255,.28); padding:4px 20px 8px; margin-top:8px; }
-    .nav-item { display:flex; align-items:center; gap:10px; padding:9px 20px; cursor:pointer; color:rgba(255,255,255,.55); font-size:13px; border-left:2px solid transparent; transition:all .15s; user-select:none; }
+    .nav-item { display:flex; align-items:center; gap:10px; padding:11px 20px; cursor:pointer; color:rgba(255,255,255,.55); font-size:14px; border-left:2px solid transparent; transition:all .15s; }
     .nav-item:hover { background:rgba(255,255,255,.05); color:rgba(255,255,255,.85); }
     .nav-item.active { background:rgba(201,168,76,.1); color:var(--gold); border-left-color:var(--gold); }
-    .nav-item i { font-size:17px; flex-shrink:0; }
+    .nav-item i { font-size:18px; flex-shrink:0; }
 
     /* MAIN */
-    .main { margin-left:var(--sidebar-w); flex:1; padding:28px; overflow-y:auto; }
-    .page { display:none; flex-direction:column; gap:20px; }
+    .main { padding-top:var(--header-h); min-height:100vh; }
+    .main-inner { padding:16px; display:flex; flex-direction:column; gap:18px; padding-bottom:80px; }
+    .page { display:none; flex-direction:column; gap:16px; }
     .page.active { display:flex; }
 
     /* PAGE HEADER */
-    .page-header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .page-header { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap; }
     .page-eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:var(--gold-muted); margin-bottom:4px; }
-    .page-title { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:600; }
+    .page-title { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; line-height:1.2; }
 
-    /* BOTÓN PRIMARIO */
-    .btn-primary { display:flex; align-items:center; gap:7px; padding:9px 18px; background:var(--navy); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Inter',sans-serif; transition:background .15s; }
+    /* BOTONES */
+    .btn-primary { display:flex; align-items:center; gap:7px; padding:9px 16px; background:var(--navy); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Inter',sans-serif; transition:background .15s; white-space:nowrap; }
     .btn-primary:hover { background:var(--navy-light); }
-    .btn-primary i { font-size:16px; }
-
-    .btn-sm { padding:6px 12px; font-size:12px; }
-    .btn-danger { background:#fef2f2; color:var(--red); border:0.5px solid #fecaca; }
-    .btn-danger:hover { background:#fee2e2; }
+    .btn-sm { padding:6px 11px; font-size:12px; }
+    .btn-danger  { background:#fef2f2; color:var(--red);   border:0.5px solid #fecaca; }
+    .btn-danger:hover  { background:#fee2e2; }
     .btn-success { background:#f0fdf4; color:var(--green); border:0.5px solid #bbf7d0; }
     .btn-success:hover { background:#dcfce7; }
 
-    /* TABLA */
-    .table-wrap { background:var(--bg-card); border:0.5px solid var(--border); border-radius:12px; overflow:hidden; }
+    /* CARDS (móvil — reemplazan tablas) */
+    .cards-list { display:flex; flex-direction:column; gap:10px; }
+
+    .item-card { background:var(--bg-card); border:0.5px solid var(--border); border-radius:12px; padding:14px 16px; display:flex; flex-direction:column; gap:8px; }
+    .item-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+    .item-card-title { font-size:14px; font-weight:500; color:var(--text-main); line-height:1.3; }
+    .item-card-sub { font-size:12px; color:var(--text-sec); margin-top:2px; }
+    .item-card-bottom { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+    .item-card-meta { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .item-card-actions { display:flex; gap:6px; }
+
+    /* TABLA (desktop) */
+    .table-wrap { background:var(--bg-card); border:0.5px solid var(--border); border-radius:12px; overflow:hidden; display:none; }
     table { width:100%; border-collapse:collapse; font-size:13px; }
     thead th { background:#f8fafc; padding:11px 16px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-sec); font-weight:600; border-bottom:0.5px solid var(--border); }
-    tbody td { padding:12px 16px; border-bottom:0.5px solid var(--border); color:var(--text-main); vertical-align:middle; }
+    tbody td { padding:11px 16px; border-bottom:0.5px solid var(--border); color:var(--text-main); vertical-align:middle; }
     tbody tr:last-child td { border-bottom:none; }
     tbody tr:hover td { background:#fafbfd; }
-
-    .pill { display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:2px 9px; border-radius:10px; font-weight:500; }
-    .pill-green { background:rgba(15,110,86,.1); color:var(--green); }
-    .pill-red   { background:rgba(163,45,45,.1);  color:var(--red); }
-    .pill-gold  { background:rgba(201,168,76,.15); color:var(--gold-muted); }
-    .pill-blue  { background:rgba(24,95,165,.1);   color:#185FA5; }
-
     .td-actions { display:flex; gap:6px; }
 
+    /* PILLS */
+    .pill { display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:2px 9px; border-radius:10px; font-weight:500; }
+    .pill-green { background:rgba(15,110,86,.1);  color:var(--green); }
+    .pill-red   { background:rgba(163,45,45,.1);  color:var(--red); }
+    .pill-gold  { background:rgba(201,168,76,.15);color:var(--gold-muted); }
+    .pill-blue  { background:rgba(24,95,165,.1);  color:#185FA5; }
+
+    /* BOTTOM NAV */
+    .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--navy-dark); border-top:0.5px solid rgba(255,255,255,.1); display:flex; z-index:190; padding-bottom:env(safe-area-inset-bottom); }
+    .bn-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 4px; cursor:pointer; color:rgba(255,255,255,.45); font-size:10px; border:none; background:none; font-family:'Inter',sans-serif; }
+    .bn-item i { font-size:20px; }
+    .bn-item.active { color:var(--gold); }
+
     /* MODAL */
-    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:200; display:none; align-items:center; justify-content:center; padding:20px; }
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:300; display:none; align-items:flex-end; justify-content:center; }
     .modal-overlay.open { display:flex; }
-    .modal { background:#fff; border-radius:16px; width:100%; max-width:520px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.2); }
-    .modal-header { padding:20px 24px 0; display:flex; align-items:center; justify-content:space-between; }
+    .modal { background:#fff; border-radius:16px 16px 0 0; width:100%; max-height:90vh; overflow-y:auto; }
+    .modal-header { padding:16px 20px 0; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:#fff; z-index:1; padding-top:20px; }
+    .modal-handle { width:36px; height:4px; background:#e2e8f0; border-radius:2px; margin:0 auto 12px; }
     .modal-title { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; }
     .modal-close { background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-sec); padding:4px; }
-    .modal-body { padding:20px 24px; display:flex; flex-direction:column; gap:14px; }
-    .modal-footer { padding:0 24px 20px; display:flex; gap:10px; justify-content:flex-end; }
+    .modal-body { padding:16px 20px; display:flex; flex-direction:column; gap:14px; }
+    .modal-footer { padding:0 20px 20px; display:flex; gap:10px; justify-content:flex-end; position:sticky; bottom:0; background:#fff; padding-top:12px; border-top:0.5px solid var(--border); }
 
     /* FORM */
     .form-group { display:flex; flex-direction:column; gap:5px; }
     .form-label { font-size:12px; font-weight:500; color:var(--text-main); }
     .form-hint  { font-size:11px; color:var(--text-sec); }
-    .form-input, .form-select, .form-textarea {
-      padding:9px 12px; border:0.5px solid var(--border); border-radius:8px;
-      font-size:13px; font-family:'Inter',sans-serif; color:var(--text-main);
-      background:#fff; outline:none; transition:border-color .15s;
-    }
-    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--navy); }
+    .form-input,.form-select,.form-textarea { padding:10px 12px; border:0.5px solid var(--border); border-radius:8px; font-size:14px; font-family:'Inter',sans-serif; color:var(--text-main); background:#fff; outline:none; transition:border-color .15s; -webkit-appearance:none; }
+    .form-input:focus,.form-select:focus,.form-textarea:focus { border-color:var(--navy); }
     .form-textarea { resize:vertical; min-height:80px; }
     .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 
     /* TOGGLE */
     .toggle-wrap { display:flex; align-items:center; gap:10px; }
-    .toggle { position:relative; width:40px; height:22px; }
+    .toggle { position:relative; width:44px; height:24px; }
     .toggle input { opacity:0; width:0; height:0; }
-    .toggle-slider { position:absolute; inset:0; background:#e2e8f0; border-radius:11px; cursor:pointer; transition:.2s; }
-    .toggle-slider::before { content:''; position:absolute; width:16px; height:16px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; }
-    .toggle input:checked + .toggle-slider { background:var(--navy); }
-    .toggle input:checked + .toggle-slider::before { transform:translateX(18px); }
+    .toggle-slider { position:absolute; inset:0; background:#e2e8f0; border-radius:12px; cursor:pointer; transition:.2s; }
+    .toggle-slider::before { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; }
+    .toggle input:checked+.toggle-slider { background:var(--navy); }
+    .toggle input:checked+.toggle-slider::before { transform:translateX(20px); }
 
-    /* STATS TOP */
-    .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
-    .stat-card { background:var(--bg-card); border:0.5px solid var(--border); border-radius:12px; padding:16px; }
-    .stat-label { font-size:11px; color:var(--text-sec); margin-bottom:4px; }
-    .stat-val { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:var(--text-main); }
-    .stat-sub { font-size:11px; color:var(--text-sec); margin-top:2px; }
+    /* ACCESO DENEGADO */
+    .acceso-denegado { position:fixed; inset:0; background:var(--navy-dark); display:none; flex-direction:column; align-items:center; justify-content:center; gap:16px; z-index:999; padding:24px; text-align:center; }
+    .acceso-denegado.show { display:flex; }
 
     /* LOADING */
     .loading-overlay { position:fixed; inset:0; background:var(--navy-dark); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; z-index:1000; }
@@ -126,37 +138,53 @@
     .loading-txt { font-size:13px; color:rgba(255,255,255,.5); }
 
     /* TOAST */
-    .toast { position:fixed; bottom:24px; right:24px; background:var(--navy); color:#fff; padding:12px 20px; border-radius:10px; font-size:13px; z-index:500; display:none; align-items:center; gap:10px; box-shadow:0 4px 20px rgba(0,0,0,.3); }
+    .toast { position:fixed; bottom:70px; left:16px; right:16px; background:var(--navy); color:#fff; padding:12px 16px; border-radius:10px; font-size:13px; z-index:500; display:none; align-items:center; gap:10px; box-shadow:0 4px 20px rgba(0,0,0,.3); }
     .toast.show { display:flex; }
-    .toast.ok   { border-left:3px solid var(--gold); }
-    .toast.err  { border-left:3px solid #f87171; }
+    .toast.ok  { border-left:3px solid var(--gold); }
+    .toast.err { border-left:3px solid #f87171; }
 
-    /* acceso denegado */
-    .acceso-denegado { position:fixed; inset:0; background:var(--navy-dark); display:none; flex-direction:column; align-items:center; justify-content:center; gap:16px; z-index:999; }
-    .acceso-denegado.show { display:flex; }
+    /* ── DESKTOP ── */
+    @media (min-width: 768px) {
+      .btn-menu { display:none; }
+      .sidebar { transform:translateX(0) !important; }
+      .sidebar-overlay { display:none !important; }
+      .bottom-nav { display:none; }
+
+      .main { margin-left:var(--sidebar-w); }
+      .main-inner { padding:28px; padding-bottom:28px; }
+
+      /* mostrar tablas, ocultar cards */
+      .table-wrap { display:block; }
+      .cards-list { display:none; }
+
+      /* modal centrado */
+      .modal-overlay { align-items:center; }
+      .modal { border-radius:16px; max-width:520px; }
+      .modal-handle { display:none; }
+
+      .toast { bottom:24px; left:auto; right:24px; width:auto; max-width:360px; }
+    }
   </style>
 </head>
 <body>
 
-<!-- LOADING -->
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
   <div class="loading-txt">Verificando acceso admin...</div>
 </div>
 
-<!-- ACCESO DENEGADO -->
 <div class="acceso-denegado" id="accesoDenegado">
   <i class="ti ti-lock" style="font-size:48px;color:rgba(201,168,76,.5)"></i>
   <div style="font-family:'Cormorant Garamond',serif;font-size:24px;color:#fff">Acceso restringido</div>
   <div style="font-size:13px;color:rgba(255,255,255,.5)">Esta sección es solo para administradores.</div>
-  <a href="portal.html" style="margin-top:8px;padding:10px 20px;background:var(--gold);color:var(--navy);border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">Volver al portal</a>
+  <a href="portal.html" style="margin-top:8px;padding:12px 24px;background:var(--gold);color:var(--navy);border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;">Volver al portal</a>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <!-- HEADER -->
 <header class="header">
+  <button class="btn-menu" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
   <div class="logo-block">
     <div class="logo-mark">
       <svg viewBox="0 0 40 40" fill="none">
@@ -171,26 +199,25 @@
     </div>
     <span class="admin-badge">Admin</span>
   </div>
-  <div class="header-right">
-    <a class="btn-portal" href="portal.html"><i class="ti ti-arrow-left"></i> Portal</a>
-  </div>
+  <a class="btn-portal" href="portal.html"><i class="ti ti-arrow-left"></i> Portal</a>
 </header>
 
-<!-- LAYOUT -->
-<div class="layout">
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-  <!-- SIDEBAR -->
-  <nav class="sidebar">
-    <span class="sidebar-section">Contenidos</span>
-    <div class="nav-item active" onclick="mostrarPagina('modulos',this)"><i class="ti ti-book-2"></i> Módulos</div>
-    <div class="nav-item" onclick="mostrarPagina('recursos',this)"><i class="ti ti-paperclip"></i> Recursos</div>
-    <span class="sidebar-section">Participantes</span>
-    <div class="nav-item" onclick="mostrarPagina('participantes',this)"><i class="ti ti-users"></i> Participantes</div>
-    <div class="nav-item" onclick="mostrarPagina('progreso',this)"><i class="ti ti-report-analytics"></i> Progreso</div>
-  </nav>
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <span class="sidebar-section">Contenidos</span>
+  <div class="nav-item active" onclick="mostrarPagina('modulos',this)"><i class="ti ti-book-2"></i> Módulos</div>
+  <div class="nav-item" onclick="mostrarPagina('recursos',this)"><i class="ti ti-paperclip"></i> Recursos</div>
+  <span class="sidebar-section">Participantes</span>
+  <div class="nav-item" onclick="mostrarPagina('participantes',this)"><i class="ti ti-users"></i> Participantes</div>
+  <div class="nav-item" onclick="mostrarPagina('progreso',this)"><i class="ti ti-report-analytics"></i> Progreso</div>
+</nav>
 
-  <!-- MAIN -->
-  <main class="main">
+<!-- MAIN -->
+<div class="main">
+  <div class="main-inner">
 
     <!-- ══ MÓDULOS ══ -->
     <section class="page active" id="page-modulos">
@@ -199,15 +226,16 @@
           <div class="page-eyebrow">Gestión de contenidos</div>
           <div class="page-title">Módulos del programa</div>
         </div>
-        <button class="btn-primary" onclick="abrirModalModulo()"><i class="ti ti-plus"></i> Nuevo módulo</button>
+        <button class="btn-primary btn-sm" onclick="abrirModalModulo()"><i class="ti ti-plus"></i> Nuevo</button>
       </div>
+
+      <!-- CARDS (móvil) -->
+      <div class="cards-list" id="cardsModulos"></div>
+
+      <!-- TABLA (desktop) -->
       <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>#</th><th>Título</th><th>Dimensión</th><th>Horas</th><th>Estado</th><th>Acciones</th>
-          </tr></thead>
-          <tbody id="tbModulos"><tr><td colspan="6" style="text-align:center;color:var(--text-sec);padding:24px">Cargando...</td></tr></tbody>
-        </table>
+        <table><thead><tr><th>#</th><th>Título</th><th>Dimensión</th><th>Horas</th><th>Estado</th><th>Acc.</th></tr></thead>
+        <tbody id="tbModulos"><tr><td colspan="6" style="text-align:center;color:var(--text-sec);padding:24px">Cargando...</td></tr></tbody></table>
       </div>
     </section>
 
@@ -218,15 +246,12 @@
           <div class="page-eyebrow">Gestión de contenidos</div>
           <div class="page-title">Recursos y materiales</div>
         </div>
-        <button class="btn-primary" onclick="abrirModalRecurso()"><i class="ti ti-plus"></i> Nuevo recurso</button>
+        <button class="btn-primary btn-sm" onclick="abrirModalRecurso()"><i class="ti ti-plus"></i> Nuevo</button>
       </div>
+      <div class="cards-list" id="cardsRecursos"></div>
       <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>Módulo</th><th>Tipo</th><th>Título</th><th>URL / ID</th><th>Estado</th><th>Acciones</th>
-          </tr></thead>
-          <tbody id="tbRecursos"><tr><td colspan="6" style="text-align:center;color:var(--text-sec);padding:24px">Cargando...</td></tr></tbody>
-        </table>
+        <table><thead><tr><th>Módulo</th><th>Tipo</th><th>Título</th><th>Estado</th></tr></thead>
+        <tbody id="tbRecursos"><tr><td colspan="4" style="text-align:center;color:var(--text-sec);padding:24px">Cargando...</td></tr></tbody></table>
       </div>
     </section>
 
@@ -237,15 +262,12 @@
           <div class="page-eyebrow">Gestión de acceso</div>
           <div class="page-title">Participantes</div>
         </div>
-        <button class="btn-primary" onclick="abrirModalParticipante()"><i class="ti ti-plus"></i> Agregar participante</button>
+        <button class="btn-primary btn-sm" onclick="abrirModalParticipante()"><i class="ti ti-plus"></i> Agregar</button>
       </div>
+      <div class="cards-list" id="cardsParticipantes"></div>
       <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>Email</th><th>Nombre</th><th>Rol</th><th>Mín. resp.</th><th>Acceso</th><th>Acciones</th>
-          </tr></thead>
-          <tbody id="tbParticipantes"><tr><td colspan="6" style="text-align:center;color:var(--text-sec);padding:24px">Cargando...</td></tr></tbody>
-        </table>
+        <table><thead><tr><th>Email</th><th>Rol</th><th>Mín.</th><th>Acceso</th><th>Acc.</th></tr></thead>
+        <tbody id="tbParticipantes"><tr><td colspan="5" style="text-align:center;color:var(--text-sec);padding:24px">Cargando...</td></tr></tbody></table>
       </div>
     </section>
 
@@ -257,22 +279,28 @@
           <div class="page-title">Progreso por participante</div>
         </div>
       </div>
+      <div class="cards-list" id="cardsProgreso"></div>
       <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>Participante</th><th>Módulos completados</th><th>Último avance</th>
-          </tr></thead>
-          <tbody id="tbProgreso"><tr><td colspan="3" style="text-align:center;color:var(--text-sec);padding:24px">Cargando...</td></tr></tbody>
-        </table>
+        <table><thead><tr><th>Participante</th><th>Módulos completados</th><th>Último avance</th></tr></thead>
+        <tbody id="tbProgreso"><tr><td colspan="3" style="text-align:center;color:var(--text-sec);padding:24px">Cargando...</td></tr></tbody></table>
       </div>
     </section>
 
-  </main>
+  </div>
 </div>
 
-<!-- ══ MODAL MÓDULO ══ -->
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="bn-item active" onclick="mostrarPaginaBN('modulos',this)"><i class="ti ti-book-2"></i>Módulos</button>
+  <button class="bn-item" onclick="mostrarPaginaBN('recursos',this)"><i class="ti ti-paperclip"></i>Recursos</button>
+  <button class="bn-item" onclick="mostrarPaginaBN('participantes',this)"><i class="ti ti-users"></i>Participantes</button>
+  <button class="bn-item" onclick="mostrarPaginaBN('progreso',this)"><i class="ti ti-report-analytics"></i>Progreso</button>
+</nav>
+
+<!-- MODAL MÓDULO -->
 <div class="modal-overlay" id="modalModulo">
   <div class="modal">
+    <div class="modal-handle"></div>
     <div class="modal-header">
       <div class="modal-title" id="modalModuloTitulo">Nuevo módulo</div>
       <button class="modal-close" onclick="cerrarModal('modalModulo')"><i class="ti ti-x"></i></button>
@@ -280,52 +308,34 @@
     <div class="modal-body">
       <input type="hidden" id="mId">
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Orden <span style="color:red">*</span></label>
-          <input class="form-input" type="number" id="mOrden" min="1" placeholder="1">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Horas estimadas</label>
-          <input class="form-input" type="number" id="mHoras" min="0.5" step="0.5" placeholder="4">
-        </div>
+        <div class="form-group"><label class="form-label">Orden *</label><input class="form-input" type="number" id="mOrden" min="1" placeholder="1"></div>
+        <div class="form-group"><label class="form-label">Horas</label><input class="form-input" type="number" id="mHoras" min="0.5" step="0.5" placeholder="4"></div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Título del módulo <span style="color:red">*</span></label>
-        <input class="form-input" id="mTitulo" placeholder="ej. Fundamentos de la Inteligencia Emocional">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Dimensión IE</label>
+      <div class="form-group"><label class="form-label">Título *</label><input class="form-input" id="mTitulo" placeholder="ej. Fundamentos de la IE"></div>
+      <div class="form-group"><label class="form-label">Dimensión IE</label>
         <select class="form-select" id="mDimension">
           <option value="">— Selecciona —</option>
-          <option>Autoconciencia</option>
-          <option>Autogestión</option>
-          <option>Conciencia Social</option>
-          <option>Gestión de Relaciones</option>
+          <option>Autoconciencia</option><option>Autogestión</option>
+          <option>Conciencia Social</option><option>Gestión de Relaciones</option>
           <option>Liderazgo Emocional</option>
         </select>
       </div>
-      <div class="form-group">
-        <label class="form-label">Descripción</label>
-        <textarea class="form-textarea" id="mDesc" placeholder="Descripción breve visible en la tarjeta del módulo..."></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Publicado</label>
-        <div class="toggle-wrap">
-          <label class="toggle"><input type="checkbox" id="mPublicado" checked><span class="toggle-slider"></span></label>
-          <span style="font-size:13px;color:var(--text-sec)">Visible para los participantes</span>
-        </div>
+      <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-textarea" id="mDesc" placeholder="Descripción breve visible en la tarjeta..."></textarea></div>
+      <div class="form-group"><label class="form-label">Publicado</label>
+        <div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="mPublicado" checked><span class="toggle-slider"></span></label><span style="font-size:13px;color:var(--text-sec)">Visible para participantes</span></div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn-primary btn-sm" style="background:#e8edf5;color:var(--text-main)" onclick="cerrarModal('modalModulo')">Cancelar</button>
-      <button class="btn-primary btn-sm" onclick="guardarModulo()"><i class="ti ti-device-floppy"></i> Guardar en Sheets</button>
+      <button class="btn-primary btn-sm" onclick="guardarModulo()"><i class="ti ti-device-floppy"></i> Guardar</button>
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL RECURSO ══ -->
+<!-- MODAL RECURSO -->
 <div class="modal-overlay" id="modalRecurso">
   <div class="modal">
+    <div class="modal-handle"></div>
     <div class="modal-header">
       <div class="modal-title" id="modalRecursoTitulo">Nuevo recurso</div>
       <button class="modal-close" onclick="cerrarModal('modalRecurso')"><i class="ti ti-x"></i></button>
@@ -333,380 +343,331 @@
     <div class="modal-body">
       <input type="hidden" id="rId">
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Módulo <span style="color:red">*</span></label>
-          <select class="form-select" id="rModuloId"></select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Tipo <span style="color:red">*</span></label>
-          <select class="form-select" id="rTipo">
-            <option value="video">Video (Vimeo)</option>
-            <option value="pdf">PDF (Drive)</option>
-            <option value="quiz">Evaluación / Quiz</option>
-          </select>
+        <div class="form-group"><label class="form-label">Módulo *</label><select class="form-select" id="rModuloId"></select></div>
+        <div class="form-group"><label class="form-label">Tipo *</label>
+          <select class="form-select" id="rTipo"><option value="video">Video (Vimeo)</option><option value="pdf">PDF (Drive)</option><option value="quiz">Evaluación</option></select>
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Título <span style="color:red">*</span></label>
-        <input class="form-input" id="rTitulo" placeholder="ej. Clase magistral: El modelo EQUILIBRIUM">
-      </div>
-      <div class="form-group">
-        <label class="form-label">ID de Vimeo o URL de Drive <span style="color:red">*</span></label>
-        <input class="form-input" id="rUrl" placeholder="ej. 76979871  o  https://drive.google.com/...">
-        <span class="form-hint">Para Vimeo pega solo el número del ID. Para Drive pega la URL completa.</span>
+      <div class="form-group"><label class="form-label">Título *</label><input class="form-input" id="rTitulo" placeholder="ej. Clase magistral: El modelo"></div>
+      <div class="form-group"><label class="form-label">ID Vimeo o URL Drive *</label>
+        <input class="form-input" id="rUrl" placeholder="ej. 76979871 o https://drive.google.com/...">
+        <span class="form-hint">Vimeo: solo el número. Drive: URL completa.</span>
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Descripción / páginas</label>
-          <input class="form-input" id="rDesc" placeholder="ej. 45 min  o  18 págs.">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Orden</label>
-          <input class="form-input" type="number" id="rOrden" min="1" placeholder="1">
-        </div>
+        <div class="form-group"><label class="form-label">Descripción</label><input class="form-input" id="rDesc" placeholder="ej. 45 min"></div>
+        <div class="form-group"><label class="form-label">Orden</label><input class="form-input" type="number" id="rOrden" min="1" placeholder="1"></div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Publicado</label>
-        <div class="toggle-wrap">
-          <label class="toggle"><input type="checkbox" id="rPublicado" checked><span class="toggle-slider"></span></label>
-          <span style="font-size:13px;color:var(--text-sec)">Visible para los participantes</span>
-        </div>
+      <div class="form-group"><label class="form-label">Publicado</label>
+        <div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="rPublicado" checked><span class="toggle-slider"></span></label><span style="font-size:13px;color:var(--text-sec)">Visible para participantes</span></div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn-primary btn-sm" style="background:#e8edf5;color:var(--text-main)" onclick="cerrarModal('modalRecurso')">Cancelar</button>
-      <button class="btn-primary btn-sm" onclick="guardarRecurso()"><i class="ti ti-device-floppy"></i> Guardar en Sheets</button>
+      <button class="btn-primary btn-sm" onclick="guardarRecurso()"><i class="ti ti-device-floppy"></i> Guardar</button>
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL PARTICIPANTE ══ -->
+<!-- MODAL PARTICIPANTE -->
 <div class="modal-overlay" id="modalParticipante">
   <div class="modal">
+    <div class="modal-handle"></div>
     <div class="modal-header">
       <div class="modal-title">Agregar participante</div>
       <button class="modal-close" onclick="cerrarModal('modalParticipante')"><i class="ti ti-x"></i></button>
     </div>
     <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">Email de Google <span style="color:red">*</span></label>
+      <div class="form-group"><label class="form-label">Email de Google *</label>
         <input class="form-input" id="pEmail" type="email" placeholder="participante@gmail.com">
-        <span class="form-hint">Debe ser el email exacto con el que el participante ingresará con Google.</span>
+        <span class="form-hint">El mismo email con el que ingresará con Google.</span>
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Rol</label>
-          <select class="form-select" id="pRol">
-            <option value="participante">Participante</option>
-            <option value="admin">Admin</option>
-          </select>
+        <div class="form-group"><label class="form-label">Rol</label>
+          <select class="form-select" id="pRol"><option value="participante">Participante</option><option value="admin">Admin</option></select>
         </div>
-        <div class="form-group">
-          <label class="form-label">Mínimo de evaluadores</label>
-          <input class="form-input" type="number" id="pMinimo" value="5" min="1">
-        </div>
+        <div class="form-group"><label class="form-label">Mín. evaluadores</label><input class="form-input" type="number" id="pMinimo" value="5" min="1"></div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Acceso activo</label>
-        <div class="toggle-wrap">
-          <label class="toggle"><input type="checkbox" id="pActivo" checked><span class="toggle-slider"></span></label>
-          <span style="font-size:13px;color:var(--text-sec)">Puede ingresar al portal</span>
-        </div>
+      <div class="form-group"><label class="form-label">Acceso activo</label>
+        <div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="pActivo" checked><span class="toggle-slider"></span></label><span style="font-size:13px;color:var(--text-sec)">Puede ingresar al portal</span></div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn-primary btn-sm" style="background:#e8edf5;color:var(--text-main)" onclick="cerrarModal('modalParticipante')">Cancelar</button>
-      <button class="btn-primary btn-sm" onclick="guardarParticipante()"><i class="ti ti-device-floppy"></i> Guardar en Sheets</button>
+      <button class="btn-primary btn-sm" onclick="guardarParticipante()"><i class="ti ti-device-floppy"></i> Guardar</button>
     </div>
   </div>
 </div>
 
-<!-- FIREBASE + LÓGICA ADMIN -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const firebaseConfig = {
-    apiKey:            "AIzaSyB1jm5zLE4qz6U6NWCwSCJot_MP0TjbI-M",
-    authDomain:        "equilibrium-academia-70e6f.firebaseapp.com",
-    projectId:         "equilibrium-academia-70e6f",
-    storageBucket:     "equilibrium-academia-70e6f.firebasestorage.app",
-    messagingSenderId: "432414897669",
-    appId:             "1:432414897669:web:4c817a7f128f9999f4ce6c"
+    apiKey:"AIzaSyB1jm5zLE4qz6U6NWCwSCJot_MP0TjbI-M",
+    authDomain:"equilibrium-academia-70e6f.firebaseapp.com",
+    projectId:"equilibrium-academia-70e6f",
+    storageBucket:"equilibrium-academia-70e6f.firebasestorage.app",
+    messagingSenderId:"432414897669",
+    appId:"1:432414897669:web:4c817a7f128f9999f4ce6c"
   };
 
   const API = "https://script.google.com/macros/s/AKfycbz5FJOZxyoVzIAmimPojjgeasl_IiBRLtkJ8LTtq46Fglqjx-9zOvIIJHBpayoN1ruL/exec";
-
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  let cache = { modulos:[], participantes:[] };
 
-  let cache = { modulos: [], participantes: [] };
-
-  // ── SESIÓN + ROL ADMIN ──
   onAuthStateChanged(auth, async (user) => {
-    if (!user) { window.location.href = "login.html"; return; }
-
-    const data = await apiFetch("getParticipante", { email: user.email });
-    if (!data.acceso || data.rol !== "admin") {
+    if (!user) { window.location.href="login.html"; return; }
+    const data = await apiFetch("getParticipante",{email:user.email});
+    if (!data.acceso || data.rol!=="admin") {
       document.getElementById("loadingOverlay").classList.add("hidden");
       document.getElementById("accesoDenegado").classList.add("show");
       return;
     }
-
     await cargarTodo();
     document.getElementById("loadingOverlay").classList.add("hidden");
   });
 
-  // ── CARGAR TODO ──
   async function cargarTodo() {
-    const [modulos, participantes] = await Promise.all([
-      apiFetch("getModulos"),
-      apiFetch("getParticipantes")
-    ]);
- cache.modulos       = Array.isArray(modulos)       ? modulos       : [];
- cache.participantes = Array.isArray(participantes) ? participantes : [];
-    renderModulos();
-    renderParticipantes();
-    poblarSelectModulos();
+    const [modulos, participantes] = await Promise.all([apiFetch("getModulos"), apiFetch("getParticipantes")]);
+    cache.modulos       = Array.isArray(modulos)       ? modulos       : [];
+    cache.participantes = Array.isArray(participantes) ? participantes : [];
+    renderModulos(); renderParticipantes(); poblarSelectModulos();
   }
 
-  // ── RENDER MÓDULOS ──
   function renderModulos() {
-    const tb = document.getElementById("tbModulos");
+    const cards = document.getElementById("cardsModulos");
+    const tb    = document.getElementById("tbModulos");
     if (!cache.modulos.length) {
-      tb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-sec);padding:24px">No hay módulos. Crea el primero.</td></tr>`;
+      cards.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text-sec);background:#fff;border-radius:12px;border:0.5px solid var(--border)">No hay módulos. Crea el primero.</div>`;
+      tb.innerHTML    = `<tr><td colspan="6" style="text-align:center;color:var(--text-sec);padding:24px">No hay módulos.</td></tr>`;
       return;
     }
+    cards.innerHTML = cache.modulos.map(m => `
+      <div class="item-card">
+        <div class="item-card-top">
+          <div><div class="item-card-title">${m.orden}. ${m.titulo}</div><div class="item-card-sub">${m.dimension||"—"} · ${m.duracion_horas||"—"}h</div></div>
+          <span class="pill ${m.publicado?'pill-green':'pill-red'}">${m.publicado?"Publicado":"Borrador"}</span>
+        </div>
+        <div class="item-card-bottom">
+          <span style="font-size:12px;color:var(--text-sec)">ID: ${m.id}</span>
+          <div class="item-card-actions"><button class="btn-primary btn-sm btn-success" onclick='editarModulo(${JSON.stringify(m)})'><i class="ti ti-pencil"></i> Editar</button></div>
+        </div>
+      </div>`).join("");
     tb.innerHTML = cache.modulos.map(m => `
       <tr>
-        <td><strong>${m.orden}</strong></td>
-        <td>${m.titulo}</td>
-        <td>${m.dimension || "—"}</td>
-        <td>${m.duracion_horas || "—"}</td>
-        <td><span class="pill ${m.publicado ? 'pill-green' : 'pill-red'}">${m.publicado ? "Publicado" : "Borrador"}</span></td>
-        <td><div class="td-actions">
-          <button class="btn-primary btn-sm btn-success" onclick='editarModulo(${JSON.stringify(m)})'><i class="ti ti-pencil"></i></button>
-        </div></td>
+        <td><strong>${m.orden}</strong></td><td>${m.titulo}</td><td>${m.dimension||"—"}</td><td>${m.duracion_horas||"—"}</td>
+        <td><span class="pill ${m.publicado?'pill-green':'pill-red'}">${m.publicado?"Publicado":"Borrador"}</span></td>
+        <td><div class="td-actions"><button class="btn-primary btn-sm btn-success" onclick='editarModulo(${JSON.stringify(m)})'><i class="ti ti-pencil"></i></button></div></td>
       </tr>`).join("");
   }
 
-  // ── RENDER PARTICIPANTES ──
   function renderParticipantes() {
-    const tb = document.getElementById("tbParticipantes");
+    const cards = document.getElementById("cardsParticipantes");
+    const tb    = document.getElementById("tbParticipantes");
     if (!cache.participantes.length) {
-      tb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-sec);padding:24px">No hay participantes registrados.</td></tr>`;
+      cards.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text-sec);background:#fff;border-radius:12px;border:0.5px solid var(--border)">No hay participantes.</div>`;
+      tb.innerHTML    = `<tr><td colspan="5" style="text-align:center;color:var(--text-sec);padding:24px">No hay participantes.</td></tr>`;
       return;
     }
+    cards.innerHTML = cache.participantes.map(p => `
+      <div class="item-card">
+        <div class="item-card-top">
+          <div><div class="item-card-title" style="font-size:13px">${p.email}</div><div class="item-card-sub">Mín. evaluadores: ${p.minimo_evaluadores||5}</div></div>
+          <span class="pill ${p.rol==='admin'?'pill-gold':'pill-blue'}">${p.rol||"participante"}</span>
+        </div>
+        <div class="item-card-bottom">
+          <span class="pill ${p.activo?'pill-green':'pill-red'}">${p.activo?"Activo":"Inactivo"}</span>
+          <button class="btn-primary btn-sm ${p.activo?'btn-danger':'btn-success'}" onclick="toggleAcceso('${p.email}',${!p.activo})">
+            <i class="ti ti-${p.activo?'lock':'lock-open'}"></i> ${p.activo?"Desactivar":"Activar"}
+          </button>
+        </div>
+      </div>`).join("");
     tb.innerHTML = cache.participantes.map(p => `
       <tr>
-        <td>${p.email}</td>
-        <td>${p.nombre || "—"}</td>
-        <td><span class="pill ${p.rol === 'admin' ? 'pill-gold' : 'pill-blue'}">${p.rol || "participante"}</span></td>
-        <td>${p.minimo_evaluadores || 5}</td>
-        <td><span class="pill ${p.activo ? 'pill-green' : 'pill-red'}">${p.activo ? "Activo" : "Inactivo"}</span></td>
-        <td><div class="td-actions">
-          <button class="btn-primary btn-sm ${p.activo ? 'btn-danger' : 'btn-success'}"
-            onclick="toggleAcceso('${p.email}', ${!p.activo})">
-            <i class="ti ti-${p.activo ? 'lock' : 'lock-open'}"></i>
-          </button>
-        </div></td>
+        <td style="font-size:12px">${p.email}</td>
+        <td><span class="pill ${p.rol==='admin'?'pill-gold':'pill-blue'}">${p.rol||"participante"}</span></td>
+        <td>${p.minimo_evaluadores||5}</td>
+        <td><span class="pill ${p.activo?'pill-green':'pill-red'}">${p.activo?"Activo":"Inactivo"}</span></td>
+        <td><button class="btn-primary btn-sm ${p.activo?'btn-danger':'btn-success'}" onclick="toggleAcceso('${p.email}',${!p.activo})"><i class="ti ti-${p.activo?'lock':'lock-open'}"></i></button></td>
       </tr>`).join("");
   }
 
-  // ── POBLAR SELECT MÓDULOS EN MODAL RECURSO ──
   function poblarSelectModulos() {
-    const sel = document.getElementById("rModuloId");
-    sel.innerHTML = cache.modulos.map(m => `<option value="${m.id}">${m.orden}. ${m.titulo}</option>`).join("");
+    document.getElementById("rModuloId").innerHTML = cache.modulos.map(m=>`<option value="${m.id}">${m.orden}. ${m.titulo}</option>`).join("");
   }
 
-  // ── ABRIR MODALES ──
   window.abrirModalModulo = function() {
-    limpiarForm(["mId","mOrden","mTitulo","mDesc","mHoras"]);
-    document.getElementById("mDimension").value  = "";
-    document.getElementById("mPublicado").checked = true;
-    document.getElementById("modalModuloTitulo").textContent = "Nuevo módulo";
+    ["mId","mOrden","mTitulo","mDesc","mHoras"].forEach(id=>document.getElementById(id).value="");
+    document.getElementById("mDimension").value=""; document.getElementById("mPublicado").checked=true;
+    document.getElementById("modalModuloTitulo").textContent="Nuevo módulo";
     document.getElementById("modalModulo").classList.add("open");
   };
 
   window.editarModulo = function(m) {
-    document.getElementById("mId").value        = m.id;
-    document.getElementById("mOrden").value     = m.orden;
-    document.getElementById("mTitulo").value    = m.titulo;
-    document.getElementById("mDesc").value      = m.descripcion  || "";
-    document.getElementById("mHoras").value     = m.duracion_horas || "";
-    document.getElementById("mDimension").value = m.dimension    || "";
-    document.getElementById("mPublicado").checked = m.publicado === true || m.publicado === "TRUE";
-    document.getElementById("modalModuloTitulo").textContent = "Editar módulo";
+    document.getElementById("mId").value=m.id; document.getElementById("mOrden").value=m.orden;
+    document.getElementById("mTitulo").value=m.titulo; document.getElementById("mDesc").value=m.descripcion||"";
+    document.getElementById("mHoras").value=m.duracion_horas||""; document.getElementById("mDimension").value=m.dimension||"";
+    document.getElementById("mPublicado").checked=m.publicado===true||m.publicado==="TRUE";
+    document.getElementById("modalModuloTitulo").textContent="Editar módulo";
     document.getElementById("modalModulo").classList.add("open");
   };
 
   window.abrirModalRecurso = function() {
-    limpiarForm(["rId","rTitulo","rUrl","rDesc","rOrden"]);
-    document.getElementById("rTipo").value      = "video";
-    document.getElementById("rPublicado").checked = true;
-    document.getElementById("modalRecursoTitulo").textContent = "Nuevo recurso";
+    ["rId","rTitulo","rUrl","rDesc","rOrden"].forEach(id=>document.getElementById(id).value="");
+    document.getElementById("rTipo").value="video"; document.getElementById("rPublicado").checked=true;
     document.getElementById("modalRecurso").classList.add("open");
   };
 
   window.abrirModalParticipante = function() {
-    limpiarForm(["pEmail","pMinimo"]);
-    document.getElementById("pMinimo").value  = "5";
-    document.getElementById("pRol").value     = "participante";
-    document.getElementById("pActivo").checked = true;
+    document.getElementById("pEmail").value=""; document.getElementById("pMinimo").value="5";
+    document.getElementById("pRol").value="participante"; document.getElementById("pActivo").checked=true;
     document.getElementById("modalParticipante").classList.add("open");
   };
 
-  window.cerrarModal = function(id) {
-    document.getElementById(id).classList.remove("open");
-  };
+  window.cerrarModal = id => document.getElementById(id).classList.remove("open");
 
-  // ── GUARDAR MÓDULO ──
   window.guardarModulo = async function() {
-    const titulo = document.getElementById("mTitulo").value.trim();
-    const orden  = document.getElementById("mOrden").value.trim();
-    if (!titulo || !orden) { toast("Completa título y orden", "err"); return; }
-
-    const fila = [
-      document.getElementById("mId").value || (cache.modulos.length + 1),
-      orden, titulo,
-      document.getElementById("mDesc").value.trim(),
-      document.getElementById("mDimension").value,
-      document.getElementById("mHoras").value || "",
-      document.getElementById("mPublicado").checked
-    ];
-
-    await apiFetch("appendRow", { hoja: "modulos", fila: JSON.stringify(fila) });
-    toast("Módulo guardado en Sheets ✓", "ok");
-    cerrarModal("modalModulo");
+    const titulo=document.getElementById("mTitulo").value.trim();
+    const orden =document.getElementById("mOrden").value.trim();
+    if (!titulo||!orden) { toast("Completa título y orden","err"); return; }
+    const fila=[document.getElementById("mId").value||(cache.modulos.length+1),orden,titulo,
+      document.getElementById("mDesc").value.trim(),document.getElementById("mDimension").value,
+      document.getElementById("mHoras").value||"",document.getElementById("mPublicado").checked];
+    await apiFetch("appendRow",{hoja:"modulos",fila:JSON.stringify(fila)});
+    toast("Módulo guardado ✓","ok"); cerrarModal("modalModulo");
+    cache.modulos=Array.isArray(await apiFetch("getModulos"))?await apiFetch("getModulos"):cache.modulos;
+    cache.modulos=Array.isArray(await apiFetch("getModulos"))?await apiFetch("getModulos"):cache.modulos;
     await recargarModulos();
   };
 
-  // ── GUARDAR RECURSO ──
   window.guardarRecurso = async function() {
-    const titulo = document.getElementById("rTitulo").value.trim();
-    const url    = document.getElementById("rUrl").value.trim();
-    if (!titulo || !url) { toast("Completa título y URL/ID", "err"); return; }
-
-    const fila = [
-      Date.now(),
-      document.getElementById("rModuloId").value,
-      document.getElementById("rTipo").value,
-      titulo, url,
-      document.getElementById("rDesc").value.trim(),
-      document.getElementById("rOrden").value || 1,
-      document.getElementById("rPublicado").checked
-    ];
-
-    await apiFetch("appendRow", { hoja: "recursos", fila: JSON.stringify(fila) });
-    toast("Recurso guardado en Sheets ✓", "ok");
-    cerrarModal("modalRecurso");
+    const titulo=document.getElementById("rTitulo").value.trim();
+    const url   =document.getElementById("rUrl").value.trim();
+    if (!titulo||!url) { toast("Completa título y URL/ID","err"); return; }
+    const fila=[Date.now(),document.getElementById("rModuloId").value,document.getElementById("rTipo").value,
+      titulo,url,document.getElementById("rDesc").value.trim(),document.getElementById("rOrden").value||1,
+      document.getElementById("rPublicado").checked];
+    await apiFetch("appendRow",{hoja:"recursos",fila:JSON.stringify(fila)});
+    toast("Recurso guardado ✓","ok"); cerrarModal("modalRecurso");
   };
 
-  // ── GUARDAR PARTICIPANTE ──
   window.guardarParticipante = async function() {
-    const email = document.getElementById("pEmail").value.trim().toLowerCase();
-    if (!email) { toast("Ingresa el email", "err"); return; }
-
-    const fila = [
-      email,
-      document.getElementById("pActivo").checked,
-      document.getElementById("pRol").value,
-      new Date().toISOString().split("T")[0],
-      document.getElementById("pMinimo").value || 5
-    ];
-
-    await apiFetch("appendRow", { hoja: "participantes", fila: JSON.stringify(fila) });
-    toast("Participante agregado ✓", "ok");
-    cerrarModal("modalParticipante");
+    const email=document.getElementById("pEmail").value.trim().toLowerCase();
+    if (!email) { toast("Ingresa el email","err"); return; }
+    const fila=[email,document.getElementById("pActivo").checked,document.getElementById("pRol").value,
+      new Date().toISOString().split("T")[0],document.getElementById("pMinimo").value||5];
+    await apiFetch("appendRow",{hoja:"participantes",fila:JSON.stringify(fila)});
+    toast("Participante agregado ✓","ok"); cerrarModal("modalParticipante");
     await recargarParticipantes();
   };
 
-  // ── TOGGLE ACCESO ──
-  window.toggleAcceso = async function(email, nuevoEstado) {
-    await apiFetch("updateParticipante", { email, activo: nuevoEstado });
-    toast(`Acceso ${nuevoEstado ? "activado" : "desactivado"} ✓`, "ok");
+  window.toggleAcceso = async function(email,nuevoEstado) {
+    await apiFetch("updateParticipante",{email,activo:nuevoEstado});
+    toast(`Acceso ${nuevoEstado?"activado":"desactivado"} ✓`,"ok");
     await recargarParticipantes();
   };
 
-  // ── RECARGAR ──
   async function recargarModulos() {
-    cache.modulos = await apiFetch("getModulos");
-    renderModulos();
-    poblarSelectModulos();
+    const m=await apiFetch("getModulos"); cache.modulos=Array.isArray(m)?m:[];
+    renderModulos(); poblarSelectModulos();
   }
-
   async function recargarParticipantes() {
-    cache.participantes = await apiFetch("getParticipantes");
+    const p=await apiFetch("getParticipantes"); cache.participantes=Array.isArray(p)?p:[];
     renderParticipantes();
   }
 
-  // ── NAVEGACIÓN ──
-  window.mostrarPagina = function(id, el) {
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-    document.getElementById("page-" + id).classList.add("active");
-    if (el) el.classList.add("active");
+  window.mostrarPagina = function(id,el) {
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+    document.getElementById("page-"+id).classList.add("active");
+    if(el) el.classList.add("active");
+    if(id==="recursos") cargarRecursos();
+    if(id==="progreso") cargarProgreso();
+    if(window.innerWidth<768) toggleSidebar(false);
+  };
 
-    if (id === "recursos") cargarRecursos();
-    if (id === "progreso") cargarProgreso();
+  window.mostrarPaginaBN = function(id,el) {
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.querySelectorAll(".bn-item").forEach(b=>b.classList.remove("active"));
+    document.getElementById("page-"+id).classList.add("active");
+    if(el) el.classList.add("active");
+    if(id==="recursos") cargarRecursos();
+    if(id==="progreso") cargarProgreso();
   };
 
   async function cargarRecursos() {
-    const tb = document.getElementById("tbRecursos");
-    tb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-sec);padding:24px"><div class="spinner" style="margin:0 auto"></div></td></tr>`;
-    const recursos = [];
-    for (const m of cache.modulos) {
-      const rs = await apiFetch("getRecursos", { modulo_id: m.id });
-      rs.forEach(r => { r._moduloTitulo = m.titulo; recursos.push(r); });
+    const cards=document.getElementById("cardsRecursos");
+    const tb   =document.getElementById("tbRecursos");
+    cards.innerHTML=`<div style="padding:24px;text-align:center"><div class="spinner" style="margin:0 auto"></div></div>`;
+    const recursos=[];
+    for(const m of cache.modulos){
+      const rs=await apiFetch("getRecursos",{modulo_id:m.id});
+      if(Array.isArray(rs)) rs.forEach(r=>{r._mt=m.titulo;recursos.push(r);});
     }
-    if (!recursos.length) {
-      tb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-sec);padding:24px">No hay recursos. Agrega el primero.</td></tr>`;
+    if(!recursos.length){
+      cards.innerHTML=`<div style="padding:24px;text-align:center;color:var(--text-sec);background:#fff;border-radius:12px;border:0.5px solid var(--border)">No hay recursos.</div>`;
+      tb.innerHTML=`<tr><td colspan="4" style="text-align:center;color:var(--text-sec);padding:24px">No hay recursos.</td></tr>`;
       return;
     }
-    tb.innerHTML = recursos.map(r => `
+    cards.innerHTML=recursos.map(r=>`
+      <div class="item-card">
+        <div class="item-card-top">
+          <div><div class="item-card-title">${r.titulo}</div><div class="item-card-sub">${r._mt}</div></div>
+          <span class="pill ${r.tipo==='video'?'pill-blue':r.tipo==='pdf'?'pill-red':'pill-gold'}">${r.tipo}</span>
+        </div>
+        <div class="item-card-bottom">
+          <span class="pill ${r.publicado?'pill-green':'pill-red'}">${r.publicado?"Publicado":"Borrador"}</span>
+        </div>
+      </div>`).join("");
+    tb.innerHTML=recursos.map(r=>`
       <tr>
-        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r._moduloTitulo}</td>
+        <td style="font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r._mt}</td>
         <td><span class="pill ${r.tipo==='video'?'pill-blue':r.tipo==='pdf'?'pill-red':'pill-gold'}">${r.tipo}</span></td>
         <td>${r.titulo}</td>
-        <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--text-sec)">${r.url_o_id}</td>
-        <td><span class="pill ${r.publicado?'pill-green':'pill-red'}">${r.publicado?'Publicado':'Borrador'}</span></td>
-        <td>—</td>
+        <td><span class="pill ${r.publicado?'pill-green':'pill-red'}">${r.publicado?"Publicado":"Borrador"}</span></td>
       </tr>`).join("");
   }
 
   async function cargarProgreso() {
-    const tb = document.getElementById("tbProgreso");
-    tb.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:24px"><div class="spinner" style="margin:0 auto"></div></td></tr>`;
-    const filas = [];
-    for (const p of cache.participantes) {
-      const prog = await apiFetch("getProgreso", { email: p.email });
-      filas.push({ email: p.email, completados: prog.length, ultimo: prog.length ? prog[prog.length-1].fecha_completado : "—" });
+    const cards=document.getElementById("cardsProgreso");
+    const tb   =document.getElementById("tbProgreso");
+    cards.innerHTML=`<div style="padding:24px;text-align:center"><div class="spinner" style="margin:0 auto"></div></div>`;
+    const filas=[];
+    for(const p of cache.participantes){
+      const prog=await apiFetch("getProgreso",{email:p.email});
+      const arr=Array.isArray(prog)?prog:[];
+      filas.push({email:p.email,completados:arr.length,ultimo:arr.length?arr[arr.length-1].fecha_completado:"—"});
     }
-    tb.innerHTML = filas.map(f => `
-      <tr>
-        <td>${f.email}</td>
-        <td><strong>${f.completados}</strong> módulos</td>
-        <td style="font-size:12px;color:var(--text-sec)">${f.ultimo}</td>
-      </tr>`).join("") || `<tr><td colspan="3" style="text-align:center;color:var(--text-sec);padding:24px">Sin datos de progreso.</td></tr>`;
+    cards.innerHTML=filas.map(f=>`
+      <div class="item-card">
+        <div class="item-card-top"><div class="item-card-title" style="font-size:13px">${f.email}</div></div>
+        <div class="item-card-bottom">
+          <span style="font-size:13px"><strong>${f.completados}</strong> módulos completados</span>
+          <span style="font-size:11px;color:var(--text-sec)">${f.ultimo}</span>
+        </div>
+      </div>`).join("") || `<div style="padding:24px;text-align:center;color:var(--text-sec)">Sin datos.</div>`;
+    tb.innerHTML=filas.map(f=>`<tr><td style="font-size:12px">${f.email}</td><td><strong>${f.completados}</strong> módulos</td><td style="font-size:12px;color:var(--text-sec)">${f.ultimo}</td></tr>`).join("")||`<tr><td colspan="3" style="text-align:center;color:var(--text-sec);padding:24px">Sin datos.</td></tr>`;
   }
 
-  // ── TOAST ──
-  window.toast = function(msg, tipo = "ok") {
-    const t = document.getElementById("toast");
-    t.textContent = msg;
-    t.className   = `toast show ${tipo}`;
-    setTimeout(() => t.classList.remove("show"), 3000);
+  window.toggleSidebar = function(forceClose) {
+    const sb=document.getElementById("sidebar");
+    const ov=document.getElementById("sidebarOverlay");
+    const isOpen=sb.classList.contains("open");
+    if(forceClose===false||isOpen){sb.classList.remove("open");ov.classList.remove("open");}
+    else{sb.classList.add("open");ov.classList.add("open");}
   };
 
-  // ── HELPERS ──
-  function limpiarForm(ids) { ids.forEach(id => { document.getElementById(id).value = ""; }); }
+  window.toast = function(msg,tipo="ok") {
+    const t=document.getElementById("toast");
+    t.textContent=msg; t.className=`toast show ${tipo}`;
+    setTimeout(()=>t.classList.remove("show"),3000);
+  };
 
-  async function apiFetch(action, params = {}) {
-    const qs = new URLSearchParams({ action, ...params }).toString();
-    const r  = await fetch(`${API}?${qs}`);
-    return r.json();
+  async function apiFetch(action,params={}) {
+    const qs=new URLSearchParams({action,...params}).toString();
+    return (await fetch(`${API}?${qs}`)).json();
   }
 </script>
-
 </body>
 </html>

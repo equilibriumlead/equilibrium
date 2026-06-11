@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EQUILIBRIUM — Módulo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #1a2744; --navy-dark: #111b30; --navy-light: #243358;
+      --gold: #C9A84C; --gold-muted: #9a7e38;
+      --text-main: #1a2744; --text-sec: #5a6a8a;
+      --bg: #f4f6fb; --bg-card: #fff; --border: #e2e8f0;
+      --header-h: 56px;
+    }
+    html, body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); }
+
+    /* HEADER */
+    .header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: var(--navy); display: flex; align-items: center; padding: 0 16px; gap: 12px; z-index: 100; }
+    .logo-block { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+    .logo-mark { width: 34px; height: 34px; border: 1.5px solid var(--gold); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .logo-mark svg { width: 20px; height: 20px; }
+    .logo-eq { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 600; color: var(--gold); letter-spacing: .08em; }
+    .logo-sub { font-size: 9px; color: rgba(255,255,255,.45); letter-spacing: .12em; text-transform: uppercase; display: block; margin-top: 1px; }
+    .btn-back { display: flex; align-items: center; gap: 5px; color: rgba(255,255,255,.65); font-size: 13px; background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; text-decoration: none; transition: color .15s; flex-shrink: 0; white-space: nowrap; }
+    .btn-back:hover { color: white; }
+    .btn-back i { font-size: 17px; }
+    .btn-back-txt { display: none; }
+
+    /* MAIN — mobile first: columna única */
+    .main { padding-top: var(--header-h); min-height: 100vh; }
+    .main-inner { padding: 16px; display: flex; flex-direction: column; gap: 16px; padding-bottom: 32px; }
+
+    /* BREADCRUMB */
+    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-sec); flex-wrap: wrap; }
+    .breadcrumb a { color: var(--gold-muted); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb i { font-size: 12px; }
+
+    /* HEADER MÓDULO */
+    .mod-tag { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--gold-muted); margin-bottom: 5px; }
+    .mod-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--text-main); line-height: 1.25; margin-bottom: 8px; }
+    .mod-desc { font-size: 13px; color: var(--text-sec); line-height: 1.6; }
+    .mod-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    .meta-pill { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-sec); background: var(--bg); border: 0.5px solid var(--border); border-radius: 20px; padding: 4px 10px; }
+    .meta-pill i { font-size: 13px; }
+
+    /* VIDEO */
+    .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--text-sec); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .section-label i { font-size: 14px; color: var(--gold-muted); }
+
+    .video-wrapper { position: relative; width: 100%; padding-bottom: 56.25%; background: var(--navy-dark); border-radius: 10px; overflow: hidden; border: 0.5px solid var(--border); }
+    .video-wrapper iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+    .video-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: rgba(255,255,255,.4); font-size: 13px; }
+    .video-placeholder i { font-size: 36px; color: rgba(201,168,76,.4); }
+
+    .video-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .video-tab { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; border: 0.5px solid var(--border); background: var(--bg-card); color: var(--text-sec); transition: all .15s; font-family: 'Inter', sans-serif; }
+    .video-tab:hover { border-color: var(--gold); color: var(--text-main); }
+    .video-tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+    .video-tab i { font-size: 13px; }
+
+    /* MATERIALES (en móvil van debajo del video) */
+    .recursos-panel { background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 12px; padding: 16px; }
+    .recursos-lista { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+
+    .recurso-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all .15s; text-decoration: none; color: inherit; }
+    .recurso-card:hover { border-color: var(--gold); }
+    .recurso-icon { width: 34px; height: 34px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .ri-pdf   { background: rgba(200,50,50,.1);  color: #A32D2D; }
+    .ri-video { background: rgba(24,95,165,.12); color: #185FA5; }
+    .ri-quiz  { background: rgba(201,168,76,.15);color: var(--gold-muted); }
+    .recurso-info { flex: 1; min-width: 0; }
+    .recurso-title { font-size: 13px; font-weight: 500; color: var(--text-main); line-height: 1.3; margin-bottom: 2px; }
+    .recurso-meta  { font-size: 11px; color: var(--text-sec); }
+    .recurso-arrow { color: var(--text-sec); font-size: 16px; flex-shrink: 0; }
+
+    /* MARCAR COMPLETADO */
+    .completado-bar { background: var(--bg-card); border: 0.5px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .completado-info strong { color: var(--text-main); display: block; font-size: 14px; margin-bottom: 3px; }
+    .completado-info p { font-size: 13px; color: var(--text-sec); line-height: 1.5; }
+    .btn-completar { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px; background: var(--gold); color: var(--navy); border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all .15s; }
+    .btn-completar:hover { background: #e8c97a; }
+    .btn-completar.done { background: #e8f5ef; color: #0F6E56; cursor: default; }
+    .btn-completar i { font-size: 18px; }
+
+    /* NAVEGACIÓN MÓDULOS */
+    .nav-modulos { display: flex; gap: 10px; }
+    .btn-nav { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; text-decoration: none; border: 0.5px solid var(--border); background: var(--bg-card); color: var(--text-sec); transition: all .15s; }
+    .btn-nav:hover { border-color: var(--navy); color: var(--navy); }
+    .btn-nav i { font-size: 15px; }
+
+    /* LOADING */
+    .loading-overlay { position: fixed; inset: 0; background: var(--navy-dark); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 1000; }
+    .loading-overlay.hidden { display: none; }
+    .spinner { width: 32px; height: 32px; border: 2px solid rgba(201,168,76,.2); border-top-color: var(--gold); border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-txt { font-size: 13px; color: rgba(255,255,255,.5); }
+
+    /* ── DESKTOP (≥768px) — layout de 2 columnas ── */
+    @media (min-width: 768px) {
+      .btn-back-txt { display: inline; }
+      .main-inner { padding: 28px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 320px; grid-template-rows: auto; column-gap: 24px; }
+
+      /* columna izquierda: todos los elementos excepto recursos */
+      .breadcrumb    { grid-column: 1; }
+      .mod-header    { grid-column: 1; }
+      .video-section { grid-column: 1; }
+      .completado-bar{ grid-column: 1; }
+      .nav-modulos   { grid-column: 1; }
+
+      /* columna derecha: recursos */
+      .recursos-panel { grid-column: 2; grid-row: 1 / 10; border-left: 0.5px solid var(--border); border-radius: 0; border-top: none; border-bottom: none; border-right: none; padding: 0 0 0 24px; background: transparent; }
+
+      .completado-bar { flex-direction: row; align-items: center; justify-content: space-between; }
+      .btn-completar  { width: auto; padding: 12px 24px; flex-shrink: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-txt">Cargando módulo...</div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo-block">
+    <div class="logo-mark">
+      <svg viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="16" stroke="#C9A84C" stroke-width="1.5"/>
+        <line x1="20" y1="4" x2="20" y2="36" stroke="#C9A84C" stroke-width="1.5"/>
+        <path d="M20 4 C11 12 11 28 20 36" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+      </svg>
+    </div>
+    <div>
+      <span class="logo-eq">EQUILIBRIUM</span>
+      <span class="logo-sub">Academia Virtual</span>
+    </div>
+  </div>
+  <a class="btn-back" href="portal.html">
+    <i class="ti ti-arrow-left"></i>
+    <span class="btn-back-txt">Volver al portal</span>
+  </a>
+</header>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="main-inner" id="mainInner" style="display:none">
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+      <a href="portal.html">Mis módulos</a>
+      <i class="ti ti-chevron-right"></i>
+      <span id="bcModulo">Módulo</span>
+    </div>
+
+    <!-- HEADER MÓDULO -->
+    <div class="mod-header">
+      <div class="mod-tag"  id="modTag"></div>
+      <div class="mod-title" id="modTitle">Cargando...</div>
+      <div class="mod-desc"  id="modDesc"></div>
+      <div class="mod-meta"  id="modMeta"></div>
+    </div>
+
+    <!-- VIDEO -->
+    <div class="video-section" id="videoSection" style="display:none">
+      <div class="section-label"><i class="ti ti-player-play"></i> Clase en video</div>
+      <div class="video-wrapper" id="videoWrapper">
+        <div class="video-placeholder">
+          <i class="ti ti-player-play"></i>
+          Selecciona un video para reproducir
+        </div>
+      </div>
+      <div class="video-tabs" id="videoTabs"></div>
+    </div>
+
+    <!-- RECURSOS (móvil: aquí, desktop: columna derecha via grid) -->
+    <div class="recursos-panel">
+      <div class="section-label"><i class="ti ti-paperclip"></i> Materiales del módulo</div>
+      <div class="recursos-lista" id="recursosList"></div>
+    </div>
+
+    <!-- COMPLETADO -->
+    <div class="completado-bar" id="completadoBar" style="display:none">
+      <div class="completado-info">
+        <strong>¿Terminaste este módulo?</strong>
+        <p>Marca como completado para registrar tu avance.</p>
+      </div>
+      <button class="btn-completar" id="btnCompletar" onclick="marcarCompletado()">
+        <i class="ti ti-circle-check"></i> Marcar completado
+      </button>
+    </div>
+
+    <!-- NAV MÓDULOS -->
+    <div class="nav-modulos" id="navModulos"></div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyB1jm5zLE4qz6U6NWCwSCJot_MP0TjbI-M",
+    authDomain:        "equilibrium-academia-70e6f.firebaseapp.com",
+    projectId:         "equilibrium-academia-70e6f",
+    storageBucket:     "equilibrium-academia-70e6f.firebasestorage.app",
+    messagingSenderId: "432414897669",
+    appId:             "1:432414897669:web:4c817a7f128f9999f4ce6c"
+  };
+
+  const API = "https://script.google.com/macros/s/AKfycbz5FJOZxyoVzIAmimPojjgeasl_IiBRLtkJ8LTtq46Fglqjx-9zOvIIJHBpayoN1ruL/exec";
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  let estado = { email:"", moduloId:null, modulos:[], progreso:[] };
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href="login.html"; return; }
+    estado.email = user.email;
+    const params = new URLSearchParams(window.location.search);
+    estado.moduloId = params.get("id");
+    if (!estado.moduloId) { window.location.href="portal.html"; return; }
+    await cargarModulo();
+    document.getElementById("loadingOverlay").classList.add("hidden");
+    document.getElementById("mainInner").style.display = "";
+  });
+
+  async function cargarModulo() {
+    const [modulos, recursos, progreso] = await Promise.all([
+      apiFetch("getModulos"),
+      apiFetch("getRecursos", {modulo_id:estado.moduloId}),
+      apiFetch("getProgreso", {email:estado.email})
+    ]);
+    estado.modulos  = Array.isArray(modulos)  ? modulos  : [];
+    estado.progreso = Array.isArray(progreso) ? progreso : [];
+    const modulo = estado.modulos.find(m => String(m.id)===String(estado.moduloId));
+    if (!modulo) { window.location.href="portal.html"; return; }
+    renderHeader(modulo);
+    renderRecursos(Array.isArray(recursos)?recursos:[]);
+    renderNavModulos(estado.modulos);
+    verificarCompletado();
+  }
+
+  function renderHeader(mod) {
+    document.title = `EQUILIBRIUM — ${mod.titulo}`;
+    document.getElementById("bcModulo").textContent  = mod.titulo;
+    document.getElementById("modTag").textContent    = mod.dimension || "";
+    document.getElementById("modTitle").textContent  = mod.titulo;
+    document.getElementById("modDesc").textContent   = mod.descripcion || "";
+    const meta = document.getElementById("modMeta");
+    meta.innerHTML = mod.duracion_horas
+      ? `<span class="meta-pill"><i class="ti ti-clock"></i> ${mod.duracion_horas} horas</span>` : "";
+  }
+
+  function renderRecursos(recursos) {
+    const lista  = document.getElementById("recursosList");
+    const videos = recursos.filter(r=>r.tipo==="video");
+    const pdfs   = recursos.filter(r=>r.tipo==="pdf");
+    const quizzes= recursos.filter(r=>r.tipo==="quiz");
+    lista.innerHTML = "";
+
+    if (videos.length) {
+      document.getElementById("videoSection").style.display = "block";
+      const tabs = document.getElementById("videoTabs");
+      tabs.innerHTML = "";
+      videos.forEach((v,i) => {
+        if (videos.length > 1) {
+          const tab = document.createElement("button");
+          tab.className = "video-tab"+(i===0?" active":"");
+          tab.innerHTML = `<i class="ti ti-player-play"></i>${v.titulo}`;
+          tab.onclick = () => { document.querySelectorAll(".video-tab").forEach(t=>t.classList.remove("active")); tab.classList.add("active"); cargarVideo(v.url_o_id); };
+          tabs.appendChild(tab);
+        }
+        const card = document.createElement("div");
+        card.className = "recurso-card";
+        card.innerHTML = `<div class="recurso-icon ri-video"><i class="ti ti-player-play"></i></div><div class="recurso-info"><div class="recurso-title">${v.titulo}</div><div class="recurso-meta">Video${v.descripcion?" · "+v.descripcion:""}</div></div><i class="ti ti-player-play recurso-arrow"></i>`;
+        card.onclick = () => { cargarVideo(v.url_o_id); window.scrollTo({top:0,behavior:"smooth"}); };
+        lista.appendChild(card);
+      });
+      cargarVideo(videos[0].url_o_id);
+    }
+
+    pdfs.forEach(p => {
+      const url = p.url_o_id.startsWith("http") ? p.url_o_id.replace("/preview","/view") : `https://drive.google.com/file/d/${p.url_o_id}/view`;
+      const card = document.createElement("a");
+      card.className = "recurso-card"; card.href = url; card.target = "_blank"; card.rel = "noopener";
+      card.innerHTML = `<div class="recurso-icon ri-pdf"><i class="ti ti-file-text"></i></div><div class="recurso-info"><div class="recurso-title">${p.titulo}</div><div class="recurso-meta">PDF${p.descripcion?" · "+p.descripcion:""}</div></div><i class="ti ti-external-link recurso-arrow"></i>`;
+      lista.appendChild(card);
+    });
+
+    quizzes.forEach(q => {
+      const card = document.createElement("a");
+      card.className = "recurso-card"; card.href = q.url_o_id; card.target = "_blank";
+      card.innerHTML = `<div class="recurso-icon ri-quiz"><i class="ti ti-checklist"></i></div><div class="recurso-info"><div class="recurso-title">${q.titulo}</div><div class="recurso-meta">Evaluación${q.descripcion?" · "+q.descripcion:""}</div></div><i class="ti ti-external-link recurso-arrow"></i>`;
+      lista.appendChild(card);
+    });
+
+    if (!recursos.length) lista.innerHTML = `<div style="font-size:13px;color:var(--text-sec);padding:8px">No hay materiales publicados aún.</div>`;
+    document.getElementById("completadoBar").style.display = "flex";
+  }
+
+  function cargarVideo(vimeoId) {
+    const id = vimeoId.toString().replace(/\D/g,"");
+    document.getElementById("videoWrapper").innerHTML = `<iframe src="https://player.vimeo.com/video/${id}?color=C9A84C&title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+  }
+
+  function verificarCompletado() {
+    const ya = estado.progreso.some(p=>String(p.modulo_id)===String(estado.moduloId));
+    if (ya) {
+      const btn = document.getElementById("btnCompletar");
+      btn.classList.add("done"); btn.innerHTML='<i class="ti ti-circle-check"></i> Módulo completado'; btn.disabled=true;
+    }
+  }
+
+  window.marcarCompletado = async function() {
+    const btn = document.getElementById("btnCompletar");
+    btn.disabled=true; btn.innerHTML='<i class="ti ti-loader"></i> Guardando...';
+    try {
+      await fetch(API, { method:"POST", body:JSON.stringify({action:"guardarProgreso",email:estado.email,modulo_id:estado.moduloId,recurso_id:0}) });
+      btn.classList.add("done"); btn.innerHTML='<i class="ti ti-circle-check"></i> Módulo completado';
+    } catch(e) {
+      btn.disabled=false; btn.innerHTML='<i class="ti ti-circle-check"></i> Marcar completado';
+    }
+  };
+
+  function renderNavModulos(modulos) {
+    const nav = document.getElementById("navModulos");
+    const idx = modulos.findIndex(m=>String(m.id)===String(estado.moduloId));
+    nav.innerHTML = "";
+    if (idx>0) nav.innerHTML += `<a class="btn-nav" href="modulo.html?id=${modulos[idx-1].id}"><i class="ti ti-arrow-left"></i> Anterior</a>`;
+    if (idx<modulos.length-1) nav.innerHTML += `<a class="btn-nav" href="modulo.html?id=${modulos[idx+1].id}">Siguiente <i class="ti ti-arrow-right"></i></a>`;
+  }
+
+  async function apiFetch(action, params={}) {
+    const qs = new URLSearchParams({action,...params}).toString();
+    return (await fetch(`${API}?${qs}`)).json();
+  }
+</script>
+</body>
+</html>
