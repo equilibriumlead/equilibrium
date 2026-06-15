@@ -1128,48 +1128,48 @@
     <p class="section-body">
       La primera cohorte inicia el <strong style="color:var(--gold-light);">20 de julio de 2026</strong>. Antes de confirmar tu cupo, tendremos una conversación de 20 minutos para asegurarnos de que el programa es el momento correcto para ti.
     </p>
-    <form class="form" action="https://formspree.io/f/xbdewbbg" method="POST">
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Nombre completo</label>
-          <input class="form-input" type="text" placeholder="Tu nombre" required>
-        </div>
-        <div class="form-field">
-          <label class="form-label">Correo electrónico</label>
-          <input class="form-input" type="email" placeholder="tu@correo.com" required>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label class="form-label">Cargo actual</label>
-          <input class="form-input" type="text" placeholder="Ej. Gerente General">
-        </div>
-        <div class="form-field">
-          <label class="form-label">País</label>
-          <select class="form-select">
-            <option value="">Selecciona tu país</option>
-            <option>Guatemala</option>
-            <option>México</option>
-            <option>Colombia</option>
-            <option>Costa Rica</option>
-            <option>El Salvador</option>
-            <option>Honduras</option>
-            <option>Nicaragua</option>
-            <option>Panamá</option>
-            <option>Perú</option>
-            <option>Chile</option>
-            <option>Argentina</option>
-            <option>Otro</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-field">
-        <label class="form-label">¿Qué te llevó a interesarte en EQUILIBRIUM?</label>
-        <textarea class="form-textarea" placeholder="Cuéntame brevemente tu contexto y qué estás buscando desarrollar..."></textarea>
-      </div>
-      <button type="submit" class="form-submit">Solicitar mi conversación de 20 minutos</button>
-      <p class="form-note">20 cupos disponibles · Inicio 20 de julio 2026 · Te responderé en menos de 24 horas.</p>
-    </form>
+<form class="form" action="https://formspree.io/f/xbdewbbg" method="POST">
+  <div class="form-row">
+    <div class="form-field">
+      <label class="form-label">Nombre completo</label>
+      <input class="form-input" type="text" name="nombre" placeholder="Tu nombre" required>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Correo electrónico</label>
+      <input class="form-input" type="email" name="email" placeholder="tu@correo.com" required>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-field">
+      <label class="form-label">Cargo actual</label>
+      <input class="form-input" type="text" name="cargo" placeholder="Ej. Gerente General">
+    </div>
+    <div class="form-field">
+      <label class="form-label">País</label>
+      <select class="form-select" name="pais">
+        <option value="">Selecciona tu país</option>
+        <option>Guatemala</option>
+        <option>México</option>
+        <option>Colombia</option>
+        <option>Costa Rica</option>
+        <option>El Salvador</option>
+        <option>Honduras</option>
+        <option>Nicaragua</option>
+        <option>Panamá</option>
+        <option>Perú</option>
+        <option>Chile</option>
+        <option>Argentina</option>
+        <option>Otro</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-field">
+    <label class="form-label">¿Qué te llevó a interesarte en EQUILIBRIUM?</label>
+    <textarea class="form-textarea" name="mensaje" placeholder="Cuéntame brevemente tu contexto y qué estás buscando desarrollar..."></textarea>
+  </div>
+  <button type="submit" class="form-submit">Solicitar mi conversación de 20 minutos</button>
+  <p class="form-note">20 cupos disponibles · Inicio 20 de julio 2026 · Te responderé en menos de 24 horas.</p>
+</form>
   </div>
 </section>
 
@@ -1179,14 +1179,7 @@
 </footer>
 
 <script>
-function handleSubmit(e) {
-  e.preventDefault();
-  const btn = e.target.querySelector('.form-submit');
-  btn.textContent = '✓ Solicitud enviada — te contactaré pronto';
-  btn.style.background = '#2E7FD4';
-  btn.disabled = true;
-  // Aquí conectas tu formulario con Formspree, Netlify Forms, o tu correo
-  // Recomendado: https://formspree.io — gratis hasta 50 envíos/mes
+
 }
 </script>
 
