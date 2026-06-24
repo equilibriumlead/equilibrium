@@ -527,14 +527,14 @@
     document.getElementById("respSub").innerHTML = falt>0
       ? `Faltan <strong>${falt}</strong> respuestas para desbloquear tu informe`
       : `<strong style="color:#0F6E56">¡Mínimo alcanzado!</strong>`;
-    const link = lid ? `https://lfmarroquin.github.io/360-ie/evaluacion.html?lid=${lid}` : "—";
+    const link = lid ? `https://equilibriumlead.github.io/360-ie/evaluacion.html?lid=${lid}` : "—";
     document.getElementById("linkEval").textContent = link;
     window._linkEval = link;
     const btn = document.getElementById("btnInforme");
     const aviso = document.getElementById("informeAviso");
     if (resp >= min) {
       btn.classList.replace("bloqueado-btn","activo");
-      btn.href = `https://lfmarroquin.github.io/360-ie/reporte.html?lid=${lid}`;
+      btn.href = `https://equilibriumlead.github.io/360-ie/reporte.html?lid=${lid}`;
       aviso.style.display = "none";
     } else {
       btn.classList.replace("activo","bloqueado-btn");
