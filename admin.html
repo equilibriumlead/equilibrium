@@ -567,7 +567,7 @@
 
     // Validar email duplicado
     const existente = await apiFetch("getParticipante", {email});
-    if (existente && existente.acceso !== undefined) { toast("Este email ya está registrado","err"); return; }
+    if (existente && existente.acceso === true) { toast("Este email ya está registrado","err"); return; }
 
     const fecha = new Date().toISOString().split("T")[0];
 
