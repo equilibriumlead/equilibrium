@@ -559,15 +559,33 @@
   };
 
   window.guardarParticipante = async function() {
-    const email=document.getElementById("pEmail").value.trim().toLowerCase();
-    if (!email) { toast("Ingresa el email","err"); return; }
-    const fila=[email,document.getElementById("pActivo").checked,document.getElementById("pRol").value,
-      new Date().toISOString().split("T")[0],document.getElementById("pMinimo").value||5];
-    await apiFetch("appendRow",{hoja:"participantes",fila:JSON.stringify(fila)});
-    toast("Participante agregado ✓","ok"); cerrarModal("modalParticipante");
+    const email   = document.getElementById("pEmail").value.trim().toLowerCase();
+    const nombre  = document.getElementById("pNombre").value.trim();
+    const empresa = document.getElementById("pEmpresa").value.trim();
+    if (!email)  { toast("Ingresa el email","err"); return; }
+    if (!nombre) { toast("Ingresa el nombre","err"); return; }
+
+    // Validar email duplicado
+    const existente = await apiFetch("getParticipante", {email});
+    if (existente && existente.acceso !== undefined) { toast("Este email ya está registrado","err"); return; }
+
+    const fecha = new Date().toISOString().split("T")[0];
+
+    // Guardar en hoja participantes
+    const filaParticipante = [email, document.getElementById("pActivo").checked,
+      document.getElementById("pRol").value, fecha, document.getElementById("pMinimo").value||5];
+    await apiFetch("appendRow", {hoja:"participantes", fila:JSON.stringify(filaParticipante)});
+
+    // Guardar en hoja líderes
+    const liderId = "LID-" + Date.now().toString().slice(-6);
+    const filaLider = [liderId, email, nombre, empresa, fecha, "activo"];
+    await apiFetch("appendRow", {hoja:"líderes", fila:JSON.stringify(filaLider)});
+
+    toast("Participante agregado ✓","ok");
+    cerrarModal("modalParticipante");
     await recargarParticipantes();
   };
-
+  
   window.toggleAcceso = async function(email,nuevoEstado) {
     await apiFetch("updateParticipante",{email,activo:nuevoEstado});
     toast(`Acceso ${nuevoEstado?"activado":"desactivado"} ✓`,"ok");
