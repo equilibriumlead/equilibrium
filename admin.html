@@ -250,8 +250,8 @@
       </div>
       <div class="cards-list" id="cardsRecursos"></div>
       <div class="table-wrap">
-        <table><thead><tr><th>Módulo</th><th>Tipo</th><th>Título</th><th>Estado</th></tr></thead>
-        <tbody id="tbRecursos"><tr><td colspan="4" style="text-align:center;color:var(--text-sec);padding:24px">Cargando...</td></tr></tbody></table>
+        <table><thead><tr><th>Módulo</th><th>Tipo</th><th>Título</th><th>Estado</th><th>Acc.</th></tr></thead>
+        <tbody id="tbRecursos"><tr><td colspan="5" style="text-align:center;color:var(--text-sec);padding:24px">Cargando...</td></tr></tbody></table>
       </div>
     </section>
 
@@ -522,6 +522,20 @@
   window.abrirModalRecurso = function() {
     ["rId","rTitulo","rUrl","rDesc","rOrden"].forEach(id=>document.getElementById(id).value="");
     document.getElementById("rTipo").value="video"; document.getElementById("rPublicado").checked=true;
+    document.getElementById("modalRecursoTitulo").textContent="Nuevo recurso";
+    document.getElementById("modalRecurso").classList.add("open");
+  };
+
+  window.editarRecurso = function(r) {
+    document.getElementById("rId").value          = r.id;
+    document.getElementById("rModuloId").value     = String(r.modulo_id);
+    document.getElementById("rTipo").value         = r.tipo || "video";
+    document.getElementById("rTitulo").value       = r.titulo || "";
+    document.getElementById("rUrl").value          = r.url_o_id || "";
+    document.getElementById("rDesc").value         = r.descripcion || "";
+    document.getElementById("rOrden").value        = r.orden || "";
+    document.getElementById("rPublicado").checked  = r.publicado===true || r.publicado==="TRUE";
+    document.getElementById("modalRecursoTitulo").textContent="Editar recurso";
     document.getElementById("modalRecurso").classList.add("open");
   };
 
@@ -594,8 +608,11 @@
     const textoOriginal = btn.innerHTML;
     btn.innerHTML = '<i class="ti ti-loader"></i> Guardando...';
 
+    const idExistente = document.getElementById("rId").value;   // vacío = nuevo; con valor = edición
+    const esEdicion   = idExistente !== "";
+
     const obj = {
-      id:          Date.now(),
+      id:          esEdicion ? idExistente : Date.now(),
       modulo_id:   document.getElementById("rModuloId").value,
       tipo:        document.getElementById("rTipo").value,
       titulo:      titulo,
@@ -605,10 +622,12 @@
       publicado:   document.getElementById("rPublicado").checked
     };
 
+    const accion = esEdicion ? "updateRow" : "appendRow";
+
     try {
-      const res = await apiFetch("appendRow", { hoja: "recursos", fila: JSON.stringify(obj) });
+      const res = await apiFetch(accion, { hoja: "recursos", fila: JSON.stringify(obj) });
       if (res && res.ok) {
-        toast("Recurso guardado ✓", "ok");
+        toast(esEdicion ? "Recurso actualizado ✓" : "Recurso guardado ✓", "ok");
         cerrarModal("modalRecurso");
         await cargarRecursos();
       } else {
@@ -716,7 +735,7 @@
     }
     if(!recursos.length){
       cards.innerHTML=`<div style="padding:24px;text-align:center;color:var(--text-sec);background:#fff;border-radius:12px;border:0.5px solid var(--border)">No hay recursos.</div>`;
-      tb.innerHTML=`<tr><td colspan="4" style="text-align:center;color:var(--text-sec);padding:24px">No hay recursos.</td></tr>`;
+      tb.innerHTML=`<tr><td colspan="5" style="text-align:center;color:var(--text-sec);padding:24px">No hay recursos.</td></tr>`;
       return;
     }
     cards.innerHTML=recursos.map(r=>`
@@ -727,6 +746,7 @@
         </div>
         <div class="item-card-bottom">
           <span class="pill ${r.publicado?'pill-green':'pill-red'}">${r.publicado?"Publicado":"Borrador"}</span>
+          <div class="item-card-actions"><button class="btn-primary btn-sm btn-success" onclick='editarRecurso(${JSON.stringify(r)})'><i class="ti ti-pencil"></i> Editar</button></div>
         </div>
       </div>`).join("");
     tb.innerHTML=recursos.map(r=>`
@@ -735,6 +755,7 @@
         <td><span class="pill ${r.tipo==='video'?'pill-blue':r.tipo==='pdf'?'pill-red':'pill-gold'}">${r.tipo}</span></td>
         <td>${r.titulo}</td>
         <td><span class="pill ${r.publicado?'pill-green':'pill-red'}">${r.publicado?"Publicado":"Borrador"}</span></td>
+        <td><div class="td-actions"><button class="btn-primary btn-sm btn-success" onclick='editarRecurso(${JSON.stringify(r)})'><i class="ti ti-pencil"></i></button></div></td>
       </tr>`).join("");
   }
 
