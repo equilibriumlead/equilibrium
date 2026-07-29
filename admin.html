@@ -571,21 +571,48 @@
   }
 };
 
-  window.guardarRecurso = async function () {
+ window.guardarRecurso = async function () {
   const titulo = document.getElementById("rTitulo").value.trim();
   const url    = document.getElementById("rUrl").value.trim();
   if (!titulo || !url) { toast("Completa título y URL/ID", "err"); return; }
 
+  const btn = event.target.closest("button");   // el botón que se presionó
+  if (btn.dataset.guardando === "1") return;     // ya está guardando → ignora clics extra
+  btn.dataset.guardando = "1";
+  btn.disabled = true;
+  const textoOriginal = btn.innerHTML;
+  btn.innerHTML = '<i class="ti ti-loader"></i> Guardando...';
+
   const obj = {
-    id:          Date.now(),                                   // id único
+    id:          Date.now(),
     modulo_id:   document.getElementById("rModuloId").value,
     tipo:        document.getElementById("rTipo").value,
     titulo:      titulo,
-    url_o_id:    url,                                          // ← nombre real de la columna
+    url_o_id:    url,
     descripcion: document.getElementById("rDesc").value.trim(),
     orden:       Number(document.getElementById("rOrden").value) || 1,
     publicado:   document.getElementById("rPublicado").checked
   };
+
+  try {
+    const res = await apiFetch("appendRow", { hoja: "recursos", fila: JSON.stringify(obj) });
+    if (res && res.ok) {
+      toast("Recurso guardado ✓", "ok");
+      cerrarModal("modalRecurso");
+      await cargarRecursos();
+    } else {
+      console.error("guardarRecurso:", res);
+      toast("No se guardó: " + (res && res.error ? res.error : "respuesta inesperada"), "err");
+    }
+  } catch (err) {
+    console.error(err);
+    toast("Error al guardar: " + err.message, "err");
+  } finally {
+    btn.disabled = false;              // libera el botón pase lo que pase
+    btn.dataset.guardando = "0";
+    btn.innerHTML = textoOriginal;
+  }
+};
 
   try {
     const res = await apiFetch("appendRow", { hoja: "recursos", fila: JSON.stringify(obj) });
