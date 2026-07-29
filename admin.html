@@ -327,7 +327,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn-primary btn-sm" style="background:#e8edf5;color:var(--text-main)" onclick="cerrarModal('modalModulo')">Cancelar</button>
-      <button class="btn-primary btn-sm" onclick="guardarModulo()"><i class="ti ti-device-floppy"></i> Guardar</button>
+      <button class="btn-primary btn-sm" onclick="()"><i class="ti ti-device-floppy"></i> Guardar</button>
     </div>
   </div>
 </div>
@@ -533,19 +533,43 @@
 
   window.cerrarModal = id => document.getElementById(id).classList.remove("open");
 
-  window.guardarModulo = async function() {
-    const titulo=document.getElementById("mTitulo").value.trim();
-    const orden =document.getElementById("mOrden").value.trim();
-    if (!titulo||!orden) { toast("Completa título y orden","err"); return; }
-    const fila=[document.getElementById("mId").value||(cache.modulos.length+1),orden,titulo,
-      document.getElementById("mDesc").value.trim(),document.getElementById("mDimension").value,
-      document.getElementById("mHoras").value||"",document.getElementById("mPublicado").checked];
-    await apiFetch("appendRow",{hoja:"modulos",fila:JSON.stringify(fila)});
-    toast("Módulo guardado ✓","ok"); cerrarModal("modalModulo");
-    cache.modulos=Array.isArray(await apiFetch("getModulos"))?await apiFetch("getModulos"):cache.modulos;
-    cache.modulos=Array.isArray(await apiFetch("getModulos"))?await apiFetch("getModulos"):cache.modulos;
-    await recargarModulos();
+  window.guardarModulo = async function () {
+  const titulo = document.getElementById("mTitulo").value.trim();
+  const orden  = document.getElementById("mOrden").value.trim();
+  if (!titulo || !orden) { toast("Completa título y orden", "err"); return; }
+
+  const idExistente = document.getElementById("mId").value;   // vacío = nuevo; con valor = edición
+  const esEdicion   = idExistente !== "";
+
+  const obj = {
+    id:             esEdicion ? idExistente
+                    : (Math.max(0, ...cache.modulos.map(m => Number(m.id) || 0)) + 1),
+    orden:          Number(orden),
+    titulo:         titulo,
+    descripcion:    document.getElementById("mDesc").value.trim(),
+    dimension:      document.getElementById("mDimension").value,
+    duracion_horas: document.getElementById("mHoras").value || "",
+    publicado:      document.getElementById("mPublicado").checked
   };
+
+  // Si es edición → updateRow; si es nuevo → appendRow
+  const accion = esEdicion ? "updateRow" : "appendRow";
+
+  try {
+    const res = await apiFetch(accion, { hoja: "modulos", fila: JSON.stringify(obj) });
+    if (res && res.ok) {
+      toast(esEdicion ? "Módulo actualizado ✓" : "Módulo guardado ✓", "ok");
+      cerrarModal("modalModulo");
+      await recargarModulos();          // ← refresca la lista al instante
+    } else {
+      console.error("guardarModulo:", res);
+      toast("No se guardó: " + (res && res.error ? res.error : "respuesta inesperada"), "err");
+    }
+  } catch (err) {
+    console.error(err);
+    toast("Error al guardar: " + err.message, "err");
+  }
+};
 
   window.guardarRecurso = async function() {
     const titulo=document.getElementById("rTitulo").value.trim();
@@ -593,9 +617,11 @@
   };
 
   async function recargarModulos() {
-    const m=await apiFetch("getModulos"); cache.modulos=Array.isArray(m)?m:[];
-    renderModulos(); poblarSelectModulos();
-  }
+  const m = await apiFetch("getModulos");
+  cache.modulos = Array.isArray(m) ? m : [];
+  renderModulos();
+  poblarSelectModulos();
+}
   async function recargarParticipantes() {
     const p=await apiFetch("getParticipantes"); cache.participantes=Array.isArray(p)?p:[];
     renderParticipantes();
@@ -688,10 +714,17 @@
     setTimeout(()=>t.classList.remove("show"),3000);
   };
 
-  async function apiFetch(action,params={}) {
-    const qs=new URLSearchParams({action,...params}).toString();
-    return (await fetch(`${API}?${qs}`)).json();
+  async function apiFetch(action, params = {}) {
+  const qs = new URLSearchParams({ action, ...params }).toString();
+  const resp = await fetch(`${API}?${qs}`);
+  const raw  = await resp.text();
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error("Respuesta NO-JSON del backend:", raw);
+    throw new Error("El backend no devolvió JSON (revisa la consola)");
   }
+}
 </script>
 </body>
 </html>
