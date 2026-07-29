@@ -484,7 +484,7 @@
         </div>
         <div class="item-card-bottom">
           <span class="pill ${p.activo?'pill-green':'pill-red'}">${p.activo?"Activo":"Inactivo"}</span>
-          <button class="btn-primary btn-sm ${p.activo?'btn-danger':'btn-success'}" onclick="toggleAcceso('${p.email}',${!p.activo})">
+          <button class="btn-primary btn-sm ${p.activo?'btn-success':'btn-danger'}" onclick="toggleAcceso('${p.email}',${!p.activo})">
             <i class="ti ti-${p.activo?'lock-open':'lock'}"></i> ${p.activo?"Desactivar":"Activar"}
           </button>
         </div>
@@ -495,7 +495,7 @@
         <td><span class="pill ${p.rol==='admin'?'pill-gold':'pill-blue'}">${p.rol||"participante"}</span></td>
         <td>${p.minimo_evaluadores||5}</td>
         <td><span class="pill ${p.activo?'pill-green':'pill-red'}">${p.activo?"Activo":"Inactivo"}</span></td>
-        <td><button class="btn-primary btn-sm ${p.activo?'btn-danger':'btn-success'}" onclick="toggleAcceso('${p.email}',${!p.activo})"><i class="ti ti-${p.activo?'lock-open':'lock'}"></i></button></td>
+        <td><button class="btn-primary btn-sm ${p.activo?'btn-success':'btn-danger'}" onclick="toggleAcceso('${p.email}',${!p.activo})"><i class="ti ti-${p.activo?'lock-open':'lock'}"></i></button></td>
       </tr>`).join("");
   }
 
