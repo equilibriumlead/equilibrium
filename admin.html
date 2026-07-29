@@ -484,8 +484,8 @@
         </div>
         <div class="item-card-bottom">
           <span class="pill ${p.activo?'pill-green':'pill-red'}">${p.activo?"Activo":"Inactivo"}</span>
-          <button class="btn-primary btn-sm ${p.activo?'btn-danger':'btn-success'}" onclick="toggleAcceso('${p.email}',${!p.activo})">
-            <i class="ti ti-${p.activo?'lock':'lock-open'}"></i> ${p.activo?"Desactivar":"Activar"}
+         <td><button class="btn-primary btn-sm ${p.activo?'btn-danger':'btn-success'}" onclick="toggleAcceso('${p.email}',${!p.activo})"><i class="ti ti-${p.activo?'lock-open':'lock'}"></i></button></td>
+           <i class="ti ti-${p.activo?'lock-open':'lock'}"></i> ${p.activo?"Desactivar":"Activar"}
           </button>
         </div>
       </div>`).join("");
