@@ -571,16 +571,37 @@
   }
 };
 
-  window.guardarRecurso = async function() {
-    const titulo=document.getElementById("rTitulo").value.trim();
-    const url   =document.getElementById("rUrl").value.trim();
-    if (!titulo||!url) { toast("Completa título y URL/ID","err"); return; }
-    const fila=[Date.now(),document.getElementById("rModuloId").value,document.getElementById("rTipo").value,
-      titulo,url,document.getElementById("rDesc").value.trim(),document.getElementById("rOrden").value||1,
-      document.getElementById("rPublicado").checked];
-    await apiFetch("appendRow",{hoja:"recursos",fila:JSON.stringify(fila)});
-    toast("Recurso guardado ✓","ok"); cerrarModal("modalRecurso");
+  window.guardarRecurso = async function () {
+  const titulo = document.getElementById("rTitulo").value.trim();
+  const url    = document.getElementById("rUrl").value.trim();
+  if (!titulo || !url) { toast("Completa título y URL/ID", "err"); return; }
+
+  const obj = {
+    id:          Date.now(),                                   // id único
+    modulo_id:   document.getElementById("rModuloId").value,
+    tipo:        document.getElementById("rTipo").value,
+    titulo:      titulo,
+    url_o_id:    url,                                          // ← nombre real de la columna
+    descripcion: document.getElementById("rDesc").value.trim(),
+    orden:       Number(document.getElementById("rOrden").value) || 1,
+    publicado:   document.getElementById("rPublicado").checked
   };
+
+  try {
+    const res = await apiFetch("appendRow", { hoja: "recursos", fila: JSON.stringify(obj) });
+    if (res && res.ok) {
+      toast("Recurso guardado ✓", "ok");
+      cerrarModal("modalRecurso");
+      await cargarRecursos();          // ← refresca la lista al instante
+    } else {
+      console.error("guardarRecurso:", res);
+      toast("No se guardó: " + (res && res.error ? res.error : "respuesta inesperada"), "err");
+    }
+  } catch (err) {
+    console.error(err);
+    toast("Error al guardar: " + err.message, "err");
+  }
+};
 
   window.guardarParticipante = async function() {
     const email   = document.getElementById("pEmail").value.trim().toLowerCase();
