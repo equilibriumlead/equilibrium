@@ -307,7 +307,7 @@
   }
 
   function cargarVideo(vimeoId) {
-    card.onclick = () => { cargarVideo(v.url_o_id);
+   const id = vimeoId.toString().replace(/\D/g,"");
     document.getElementById("videoWrapper").innerHTML = `<iframe src="https://player.vimeo.com/video/${id}?color=C9A84C&title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
   }
 
