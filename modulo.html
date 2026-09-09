@@ -288,7 +288,7 @@
     }
 
     pdfs.forEach(p => {
-      const url = p.url_o_id.startsWith("http") ? p.url_o_id.replace("/preview","/view") : `https://drive.google.com/file/d/${p.url_o_id}/view`;
+      const url = String(p.url_o_id).startsWith("http") ? String(p.url_o_id).replace("/preview","/view") : `https://drive.google.com/file/d/${p.url_o_id}/view`;
       const card = document.createElement("a");
       card.className = "recurso-card"; card.href = url; card.target = "_blank"; card.rel = "noopener";
       card.innerHTML = `<div class="recurso-icon ri-pdf"><i class="ti ti-file-text"></i></div><div class="recurso-info"><div class="recurso-title">${p.titulo}</div><div class="recurso-meta">PDF${p.descripcion?" · "+p.descripcion:""}</div></div><i class="ti ti-external-link recurso-arrow"></i>`;
@@ -307,7 +307,7 @@
   }
 
   function cargarVideo(vimeoId) {
-    const id = vimeoId.toString().replace(/\D/g,"");
+    card.onclick = () => { cargarVideo(v.url_o_id);
     document.getElementById("videoWrapper").innerHTML = `<iframe src="https://player.vimeo.com/video/${id}?color=C9A84C&title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
   }
 
