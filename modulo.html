@@ -178,7 +178,7 @@
 </div>
 
 <script type="module">
-  import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -194,7 +194,7 @@
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  let estado = { email:"", moduloId:null, modulos:[], progreso:[] };
+  let estado = { email:"", liderId:"0", moduloId:null, modulos:[], progreso:[] };
   let videosDisponibles = [];
 
   onAuthStateChanged(auth, async (user) => {
@@ -203,10 +203,30 @@
     const p = new URLSearchParams(window.location.search);
     estado.moduloId = p.get("id");
     if (!estado.moduloId) { window.location.href="portal.html"; return; }
+    await cargarLider();
     await cargarModulo();
     document.getElementById("loadingOverlay").classList.add("hidden");
     document.getElementById("mainInner").style.display = "";
   });
+
+  // NUEVO: obtiene el código de líder (lider_id) asociado al correo de la sesión,
+  // para poder pasárselo a las herramientas interactivas (recursos tipo "quiz").
+  async function cargarLider() {
+    try {
+      const lider = await apiFetch("getLider", {email: estado.email});
+      estado.liderId = (lider && lider.encontrado && lider.lider_id) ? String(lider.lider_id) : "0";
+    } catch (e) {
+      estado.liderId = "0";
+    }
+  }
+
+  // NUEVO: agrega ?id=<lider_id> (o &id= si ya trae parámetros) a la URL de un recurso.
+  function construirUrlConLider(urlBase) {
+    const raw = String(urlBase || "#");
+    if (raw === "#" || raw === "") return "#";
+    const sep = raw.includes("?") ? "&" : "?";
+    return `${raw}${sep}id=${encodeURIComponent(estado.liderId || "0")}`;
+  }
 
   async function cargarModulo() {
     const [modulos, recursos, progreso] = await Promise.all([
@@ -288,7 +308,9 @@
 
     quizzes.forEach(q => {
       const card = document.createElement("a");
-      card.className="recurso-card"; card.href=String(q.url_o_id||"#"); card.target="_blank";
+      card.className="recurso-card";
+      card.href = construirUrlConLider(q.url_o_id);
+      card.target="_blank"; card.rel="noopener";
       card.innerHTML=`
         <div class="recurso-icon ri-quiz"><i class="ti ti-checklist"></i></div>
         <div class="recurso-info">
@@ -360,6 +382,6 @@
     const qs=new URLSearchParams({action,...params}).toString();
     return (await fetch(`${API}?${qs}`)).json();
   }
-</script>
+  </script>
 </body>
 </html>
