@@ -272,7 +272,7 @@
     <i class="ti ti-chart-radar"></i> Mi evaluación 360°
   </div>
   <span class="sidebar-section">Mi cuenta</span>
-  <div class="nav-item" onclick="mostrarPagina('progreso',this)">
+    <div class="nav-item" onclick="abrirProgreso(this)">
     <i class="ti ti-report-analytics"></i> Mi progreso
   </div>
   <div style="flex:1"></div>
@@ -382,22 +382,34 @@
     </section>
 
     <!-- ══ PROGRESO ══ -->
-    <section class="page" id="page-progreso">
-      <div class="page-header">
-        <div>
-          <div class="page-eyebrow">Seguimiento</div>
-          <div class="page-title">Mi progreso</div>
-        </div>
-      </div>
-      <div style="background:var(--bg-card);border:0.5px solid var(--border);border-radius:14px;padding:32px;text-align:center;color:var(--text-sec);font-size:14px;">
-        <i class="ti ti-report-analytics" style="font-size:40px;color:var(--gold);display:block;margin-bottom:12px;"></i>
-        Vista detallada de progreso próximamente.
-      </div>
-    </section>
-
+<section class="page" id="page-progreso">
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow">Seguimiento</div>
+      <div class="page-title">Mis herramientas</div>
+    </div>
   </div>
-</div>
 
+  <div id="resumenHerramientas" style="margin-bottom:16px;font-size:14px;color:var(--text-sec);"></div>
+
+  <div style="background:var(--bg-card);border:0.5px solid var(--border);border-radius:14px;overflow:hidden;">
+    <table style="width:100%;border-collapse:collapse;font-size:14px;">
+      <thead>
+        <tr style="background:rgba(0,0,0,0.02);text-align:left;">
+          <th style="padding:12px 16px;border-bottom:0.5px solid var(--border);">Módulo</th>
+          <th style="padding:12px 16px;border-bottom:0.5px solid var(--border);">Herramienta</th>
+          <th style="padding:12px 16px;border-bottom:0.5px solid var(--border);">Estatus</th>
+        </tr>
+      </thead>
+      <tbody id="tablaHerramientas">
+        <tr><td colspan="3" style="padding:24px;text-align:center;color:var(--text-sec);">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+    
 <!-- BOTTOM NAV (solo móvil) -->
 <nav class="bottom-nav">
   <button class="bn-item active" id="bn-contenidos" onclick="mostrarPaginaBN('contenidos')">
@@ -406,7 +418,7 @@
   <button class="bn-item" id="bn-evaluacion" onclick="mostrarPaginaBN('evaluacion')">
     <i class="ti ti-chart-radar"></i> 360°
   </button>
-  <button class="bn-item" id="bn-progreso" onclick="mostrarPaginaBN('progreso')">
+  <button class="bn-item" id="bn-progreso" onclick="abrirProgresoBN()">
     <i class="ti ti-report-analytics"></i> Progreso
   </button>
 </nav>
@@ -582,7 +594,43 @@
     // cerrar sidebar en móvil al navegar
     if(window.innerWidth < 768) toggleSidebar(false);
   };
+async function cargarListaHerramientas() {
+  const tbody = document.getElementById("tablaHerramientas");
+  tbody.innerHTML = `<tr><td colspan="3" style="padding:24px;text-align:center;color:var(--text-sec);">Cargando...</td></tr>`;
+  try {
+    const lista = await apiFetch("getListaHerramientas", { lider_id: estado.liderId });
+    const filas = Array.isArray(lista) ? lista : [];
+    if (!filas.length) {
+      tbody.innerHTML = `<tr><td colspan="3" style="padding:24px;text-align:center;color:var(--text-sec);">Aún no hay herramientas disponibles.</td></tr>`;
+      return;
+    }
+    const completadas = filas.filter(f => f.completado).length;
+    document.getElementById("resumenHerramientas").textContent =
+      `${completadas} de ${filas.length} herramientas completadas`;
 
+    tbody.innerHTML = filas.map(f => `
+      <tr>
+        <td style="padding:12px 16px;border-bottom:0.5px solid var(--border);">${f.modulo_titulo}</td>
+        <td style="padding:12px 16px;border-bottom:0.5px solid var(--border);">${f.herramienta_titulo}</td>
+        <td style="padding:12px 16px;border-bottom:0.5px solid var(--border);">
+          ${f.completado
+            ? '<span style="color:#0F6E56;font-weight:600;">✓ Completado</span>'
+            : '<span style="color:var(--text-sec);">Pendiente</span>'}
+        </td>
+      </tr>`).join("");
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="3" style="padding:24px;text-align:center;color:var(--text-sec);">No se pudo cargar la información.</td></tr>`;
+  }
+}
+
+window.abrirProgreso = function(el) {
+  mostrarPagina('progreso', el);
+  cargarListaHerramientas();
+};
+window.abrirProgresoBN = function() {
+  mostrarPaginaBN('progreso');
+  cargarListaHerramientas();
+};
   window.mostrarPaginaBN = function(id) {
     document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
     document.querySelectorAll(".bn-item").forEach(b=>b.classList.remove("active"));
