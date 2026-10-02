@@ -227,7 +227,6 @@
   apiFetch("getRecursos", {modulo_id: estado.moduloId, lider_id: estado.liderId})
 ]);
     estado.modulos  = Array.isArray(modulos)  ? modulos  : [];
-    estado.progreso = Array.isArray(progreso) ? progreso : [];
     const modulo = estado.modulos.find(m => String(m.id) === String(estado.moduloId));
     if (!modulo) { window.location.href="portal.html"; return; }
     renderHeader(modulo);
