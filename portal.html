@@ -468,17 +468,18 @@
       lista.innerHTML = `<div style="padding:32px;text-align:center;color:#999;background:#fff;border-radius:14px;border:0.5px solid var(--border)">No hay módulos publicados aún.</div>`;
       return;
     }
-    const completadosSet = new Set(progreso.map(p=>String(p.modulo_id)));
+    const progresoPorModulo = {};
+    progreso.forEach(p => { progresoPorModulo[String(p.modulo_id)] = p; });
+
     estado.totalModulos = modulos.length;
-    estado.completados  = completadosSet.size;
+    estado.completados  = progreso.filter(p => p.estado === "completado").length;
     const romanos = ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
 
     lista.innerHTML = modulos.map((mod,idx) => {
-      const completado  = completadosSet.has(String(mod.id));
-      const enProgreso  = !completado && idx < completadosSet.size+1;
+      const prog = progresoPorModulo[String(mod.id)];
       let sc = "s-open", st = "Disponible";
-      if (completado)  { sc="s-done";     st="Completado"; }
-      else if (enProgreso) { sc="s-progress"; st="En progreso"; }
+      if (prog && prog.estado === "completado")      { sc="s-done";     st="Completado"; }
+      else if (prog && prog.estado === "en_progreso") { sc="s-progress"; st="En progreso"; }
       return `
       <a class="modulo-card" href="modulo.html?id=${mod.id}">
         <div class="mod-card-top">
@@ -500,8 +501,7 @@
 
     document.getElementById("badgeModulos").textContent = modulos.length;
     actualizarStats();
-  }
-
+}
   function actualizarStats() {
     const pct = estado.totalModulos ? Math.round((estado.completados/estado.totalModulos)*100) : 0;
     document.getElementById("statPct").innerHTML = `${pct}<span>%</span>`;
