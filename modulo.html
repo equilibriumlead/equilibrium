@@ -187,7 +187,7 @@
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  let estado = { email:"", liderId:"0", moduloId:null, modulos:[], progreso:[] };
+  let estado = { email:"", liderId:"0", moduloId:null, modulos:[] };
   let videosDisponibles = [];
 
   onAuthStateChanged(auth, async (user) => {
