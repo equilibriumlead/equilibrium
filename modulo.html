@@ -233,7 +233,18 @@
     renderRecursos(Array.isArray(recursos) ? recursos : []);
     renderNavModulos(estado.modulos);
   }
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && estado.moduloId) {
+    actualizarRecursos();
+  }
+});
 
+async function actualizarRecursos() {
+  try {
+    const recursos = await apiFetch("getRecursos", {modulo_id: estado.moduloId, lider_id: estado.liderId});
+    renderRecursos(Array.isArray(recursos) ? recursos : []);
+  } catch (e) { /* si falla, simplemente se queda con el estado anterior */ }
+}
   function renderHeader(mod) {
     document.title = `EQUILIBRIUM — ${mod.titulo}`;
     document.getElementById("bcModulo").textContent  = mod.titulo;
