@@ -166,16 +166,6 @@
       <div class="recursos-lista" id="recursosList"></div>
     </div>
 
-    <div class="completado-bar" id="completadoBar" style="display:none">
-      <div class="completado-info">
-        <strong>¿Terminaste este módulo?</strong>
-        <p>Marca como completado para registrar tu avance.</p>
-      </div>
-      <button class="btn-completar" id="btnCompletar" onclick="marcarCompletado()">
-        <i class="ti ti-circle-check"></i> Marcar completado
-      </button>
-    </div>
-
     <div class="nav-modulos" id="navModulos"></div>
   </div>
 </div>
@@ -232,11 +222,10 @@
   }
 
   async function cargarModulo() {
-    const [modulos, recursos, progreso] = await Promise.all([
-      apiFetch("getModulos"),
-      apiFetch("getRecursos", {modulo_id: estado.moduloId, lider_id: estado.liderId}),
-      apiFetch("getProgreso", {email: estado.email})
-    ]);
+   const [modulos, recursos] = await Promise.all([
+  apiFetch("getModulos"),
+  apiFetch("getRecursos", {modulo_id: estado.moduloId, lider_id: estado.liderId})
+]);
     estado.modulos  = Array.isArray(modulos)  ? modulos  : [];
     estado.progreso = Array.isArray(progreso) ? progreso : [];
     const modulo = estado.modulos.find(m => String(m.id) === String(estado.moduloId));
@@ -244,7 +233,6 @@
     renderHeader(modulo);
     renderRecursos(Array.isArray(recursos) ? recursos : []);
     renderNavModulos(estado.modulos);
-    verificarCompletado();
   }
 
   function renderHeader(mod) {
@@ -328,7 +316,6 @@
 });
 
     if (!recursos.length) lista.innerHTML=`<div style="font-size:13px;color:var(--text-sec);padding:8px">No hay materiales publicados aún.</div>`;
-    document.getElementById("completadoBar").style.display="flex";
   }
 
   function mostrarThumb(idx) {
@@ -359,22 +346,6 @@
     mostrarThumb(idx);
   };
 
-  function verificarCompletado() {
-    const ya = estado.progreso.some(p => String(p.modulo_id)===String(estado.moduloId));
-    if (ya) {
-      const btn=document.getElementById("btnCompletar");
-      btn.classList.add("done"); btn.innerHTML='<i class="ti ti-circle-check"></i> Módulo completado'; btn.disabled=true;
-    }
-  }
-
-  window.marcarCompletado = async function() {
-    const btn=document.getElementById("btnCompletar");
-    btn.disabled=true; btn.innerHTML='<i class="ti ti-loader"></i> Guardando...';
-    try {
-      await fetch(API,{method:"POST",body:JSON.stringify({action:"guardarProgreso",email:estado.email,modulo_id:estado.moduloId,recurso_id:0})});
-      btn.classList.add("done"); btn.innerHTML='<i class="ti ti-circle-check"></i> Módulo completado';
-    } catch(e) { btn.disabled=false; btn.innerHTML='<i class="ti ti-circle-check"></i> Marcar completado'; }
-  };
 
   function renderNavModulos(modulos) {
     const nav=document.getElementById("navModulos");
