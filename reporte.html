@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte 360 - Inteligencia Emocional</title>
+<style>
+:root{--navy:#1a2744;--gold:#C9A84C;--gold-light:#F5E6C0;--bg:#F7F8FA;--white:#ffffff;--text:#1a2744;--text-soft:#5a6580;--border:#e2e6ef;--radius:12px;--shadow:0 2px 12px rgba(26,39,68,0.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.header{background:var(--navy);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.header-left h1{color:var(--gold);font-size:15px;font-weight:600;letter-spacing:.5px;margin-bottom:3px}
+.header-left p{color:rgba(255,255,255,0.6);font-size:12px}
+.btn-print{padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.3);background:transparent;color:var(--white);font-size:12px;font-weight:500;cursor:pointer}
+.btn-print:hover{background:rgba(255,255,255,0.1)}
+.main{max-width:860px;margin:0 auto;padding:24px 20px}
+.lider-hero{background:var(--navy);border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.lider-hero .nombre{color:var(--white);font-size:22px;font-weight:700;margin-bottom:4px}
+.lider-hero .sub{color:rgba(255,255,255,0.6);font-size:13px}
+.lider-hero .prom-badge{background:var(--gold);color:var(--navy);border-radius:var(--radius);padding:12px 20px;text-align:center;min-width:90px}
+.lider-hero .prom-badge .val{font-size:28px;font-weight:700}
+.lider-hero .prom-badge .lbl{font-size:11px;font-weight:500;margin-top:2px}
+.card{background:var(--white);border-radius:var(--radius);border:0.5px solid var(--border);padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card-title{font-size:13px;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.stat-box{background:var(--white);border-radius:var(--radius);border:0.5px solid var(--border);padding:14px;text-align:center;box-shadow:var(--shadow)}
+.stat-box .val{font-size:22px;font-weight:600;color:var(--navy)}
+.stat-box .lbl{font-size:11px;color:var(--text-soft);margin-top:3px;line-height:1.4}
+.radar-wrap{position:relative;width:100%;height:300px;margin-bottom:40px;padding-bottom:20px}
+.dim-section{margin-bottom:8px}
+.dim-header-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--navy);border-radius:var(--radius);margin-bottom:8px;cursor:pointer}
+.dim-header-row .dim-name{color:var(--white);font-size:14px;font-weight:600}
+.dim-header-row .dim-score{color:var(--gold);font-size:16px;font-weight:700}
+.dim-header-row .dim-toggle{color:rgba(255,255,255,0.5);font-size:12px}
+.dim-items{display:flex;flex-direction:column;gap:6px;margin-bottom:4px}
+.dim-items-rest{display:flex;flex-direction:column;gap:6px;margin-bottom:4px}
+.item-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--white);border-radius:8px;border:0.5px solid var(--border)}
+.item-num{font-size:11px;color:var(--text-soft);width:20px;flex-shrink:0;text-align:center}
+.item-text{font-size:12px;color:var(--text);line-height:1.5;flex:1}
+.item-score-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;min-width:60px}
+.item-score{font-size:14px;font-weight:600;color:var(--navy)}
+.item-bar-track{width:60px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.item-bar-fill{height:100%;border-radius:3px}
+.dim-table{width:100%;border-collapse:collapse;margin-bottom:12px}
+.dim-table-header{background:var(--navy);cursor:pointer}
+.dim-table-header th{padding:11px 14px;color:var(--white)}
+.dim-table-header th:first-child{border-radius:8px 0 0 0}
+.dim-table-header th:last-child{border-radius:0 8px 0 0}
+.dim-table-row{background:var(--white);border-bottom:0.5px solid var(--border)}
+.dim-table-row:last-child{border-bottom:none}
+.dim-table-row td{padding:9px 10px;vertical-align:middle}
+.td-num{font-size:11px;color:var(--text-soft);width:24px;text-align:center}
+.td-text{font-size:12px;color:var(--text);line-height:1.5}
+.td-bar{width:70px;text-align:center}
+.td-score{font-size:13px;font-weight:600;width:36px;text-align:right;padding-right:12px!important}
+.dim-table tbody tr{page-break-inside:avoid;-webkit-column-break-inside:avoid}
+.dim-table thead{display:table-header-group}
+.nivel-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.nivel-item{background:var(--bg);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
+.nivel-item .nlbl{font-size:13px;color:var(--text-soft)}
+.nivel-item .nval{font-size:18px;font-weight:600;color:var(--navy)}
+.nval.empty{font-size:13px;color:var(--border)}
+.dim-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.dim-bar-label{font-size:13px;color:var(--text-soft);width:150px;flex-shrink:0}
+.dim-bar-track{flex:1;height:10px;background:var(--bg);border-radius:5px;overflow:hidden}
+.dim-bar-fill{height:100%;border-radius:5px;transition:width .6s}
+.dim-bar-val{font-size:13px;font-weight:600;color:var(--navy);width:32px;text-align:right}
+.comentarios-list{display:flex;flex-direction:column;gap:8px}
+.comentario-item{padding:12px 14px;border-radius:8px;background:var(--bg);border-left:3px solid var(--gold)}
+.comentario-nivel{font-size:11px;font-weight:600;color:var(--gold);margin-bottom:4px;text-transform:uppercase}
+.comentario-texto{font-size:13px;color:var(--text);line-height:1.6}
+.sin-comentarios{font-size:13px;color:var(--text-soft);font-style:italic;padding:12px 0}
+.loading{text-align:center;padding:80px 20px}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{font-size:14px;color:var(--text-soft)}
+.error-wrap{text-align:center;padding:60px 20px}
+.error-wrap h2{font-size:18px;font-weight:600;color:var(--navy);margin-bottom:8px}
+.error-wrap p{font-size:14px;color:var(--text-soft)}
+.score-high{color:#085041}
+.score-mid{color:#854F0B}
+.score-low{color:#993C1D}
+.fill-high{background:#1D9E75}
+.fill-mid{background:#C9A84C}
+.fill-low{background:#E05A3A}
+.fecha-tag{font-size:11px;color:var(--text-soft);margin-top:4px}
+
+/* ============================================================
+   ENCABEZADO Y PIE DE PAGINA PARA IMPRESION
+   ============================================================ */
+.print-header{display:none}
+
+
+@media print {
+  /* Eliminar encabezado y pie del navegador */
+  @page {
+    size: A4;
+    margin: 2.2cm 1.5cm 2.5cm 1.5cm;
+  }
+
+  /* Encabezado fijo en cada página */
+  .print-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: running(header);
+    border-bottom: 2px solid #1a2744;
+    padding-bottom: 8px;
+    margin-bottom: 0;
+  }
+  .print-header .ph-brand {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .print-header .ph-eq {
+    font-size: 14px;
+    font-weight: 300;
+    color: #1a2744;
+    letter-spacing: 4px;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+  .print-header .ph-eq-gold {
+    font-size: 14px;
+    font-weight: 300;
+    color: #C9A84C;
+    letter-spacing: 4px;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+  .print-header .ph-sep {
+    color: #e2e6ef;
+    font-size: 12px;
+    margin: 0 4px;
+  }
+  .print-header .ph-sub {
+    font-size: 10px;
+    color: #5a6580;
+    letter-spacing: .3px;
+  }
+  .print-header .ph-right {
+    font-size: 10px;
+    color: #5a6580;
+  }
+
+
+
+  @page {
+    @top-center { content: element(header); }
+
+  }
+
+  /* Fallback para Chrome — encabezado y pie como bloques fijos */
+  .print-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 8px 24px;
+    z-index: 1000;
+  }
+
+
+  /* Ajustes generales de impresion */
+  body { background: white; font-size: 11px; }
+  .header { display: none; }
+  .btn-print { display: none; }
+  .main { max-width: 100%; padding: 60px 0 50px; }
+
+  .lider-hero {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    border-radius: 8px;
+    margin-bottom: 14px;
+  }
+  .dim-header-row {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    border-radius: 6px;
+    cursor: default;
+  }
+  .dim-toggle { display: none; }
+  .dim-items { display: flex !important; }
+
+  .card {
+    box-shadow: none;
+    border: 0.5px solid #e2e6ef;
+    break-inside: avoid;
+    margin-bottom: 12px;
+  }
+  .stats-grid { break-inside: avoid; }
+  .stat-box { box-shadow: none; }
+
+  .item-row {
+    break-inside: avoid;
+    border: 0.5px solid #e2e6ef;
+  }
+  .comentario-item { break-inside: avoid; }
+  .dim-section { break-inside: auto; }
+  .dim-anchor { break-inside: avoid; page-break-inside: avoid; }
+  .dim-items-rest { display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+  .dim-header-row {
+    break-after: avoid;
+    page-break-after: avoid;
+    -webkit-column-break-after: avoid;
+  }
+  .dim-header-row + .dim-items .item-row:first-child {
+    break-before: avoid;
+    page-break-before: avoid;
+  }
+
+  .radar-wrap { height: 220px; margin-bottom:50px; padding-bottom:20px; }
+}
+
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .nivel-grid{grid-template-columns:1fr 1fr}
+  .lider-hero{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<!-- ENCABEZADO DE IMPRESION (visible solo al imprimir) -->
+<div class="print-header">
+  <div class="ph-brand">
+    <span class="ph-eq">EQUILI</span><span class="ph-eq-gold">BRIUM</span>
+    <span class="ph-sep">·</span>
+    <span class="ph-sub">Evaluacion 360° · Inteligencia Emocional</span>
+  </div>
+  <div class="ph-right" id="print-header-nombre"></div>
+</div>
+
+
+
+<!-- ENCABEZADO PANTALLA -->
+<div class="header">
+  <div class="header-left">
+    <div style="margin-bottom:6px">
+      <span style="color:#ffffff;font-size:22px;font-weight:300;letter-spacing:6px;font-family:'Cormorant Garamond',Georgia,serif">EQUILI</span><span style="color:#C9A84C;font-size:22px;font-weight:300;letter-spacing:6px;font-family:'Cormorant Garamond',Georgia,serif">BRIUM</span>
+    </div>
+    <h1>REPORTE 360° · INTELIGENCIA EMOCIONAL</h1>
+    <p>Generado el <span id="fecha-gen"></span></p>
+  </div>
+  <button class="btn-print" onclick="imprimirReporte()">Imprimir / PDF</button>
+</div>
+
+<div class="main" id="main-content">
+  <div class="loading"><div class="spinner"></div><p>Cargando reporte...</p></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="api.js"></script>
+<script>
+var SCRIPT_URL = window.EQ.API_URL;
+var cbCount = 0;
+var radarChart = null;
+var nombreLider = '';
+
+var DIMS = [
+  { nombre:'Autoconciencia', color:'#7F77DD', items:[
+    'Reconoce abiertamente cuando una situacion le ha generado una emocion intensa sin minimizarla ni exagerarla.',
+    'Cuando reacciona con intensidad, se detiene, recupera la compostura y retoma la conversacion de forma ecuanime.',
+    'Demuestra coherencia entre lo que expresa verbalmente y su lenguaje no verbal en situaciones de presion.',
+    'Busca activamente retroalimentacion sobre el impacto de sus conductas y la recibe con apertura.',
+    'Reconoce sus fortalezas y limitaciones con honestidad, sin autocomplacencia ni autocritica excesiva.',
+    'Cuando su estado de animo es negativo, modera su tono para no trasladar esa carga al equipo.',
+    'Refleja comprension clara de sus valores personales y actua consistentemente con ellos bajo presion.',
+    'Evita cargar al equipo con sus preocupaciones — mantiene separacion entre lo que le ocurre y lo que exige.'
+  ]},
+  { nombre:'Autogestion', color:'#1D9E75', items:[
+    'Mantiene la calma y el pensamiento claro ante situaciones de alta presion, sin reaccionar impulsivamente.',
+    'Ante contratiempos, se recupera en tiempo razonable y retoma el foco sin prolongar estados negativos.',
+    'Acepta con madurez situaciones que no puede controlar, adaptando su respuesta en lugar de insistir.',
+    'Regula la expresion de sus emociones en contextos profesionales de forma oportuna y constructiva.',
+    'Ajusta su comportamiento y estilo de liderazgo de manera flexible ante cambios de contexto.',
+    'Sus estandares de conducta son consistentes en todo momento, independientemente de quien lo observe.',
+    'Cuando comete un error, lo reconoce con responsabilidad, extrae aprendizaje y avanza sin culpa paralizante.',
+    'Establece limites claros frente a demandas excesivas sin caer en la sobreexigencia ni el agotamiento visible.'
+  ]},
+  { nombre:'Conciencia Social', color:'#C9A84C', items:[
+    'Cuando alguien atraviesa una situacion dificil, reacciona oportunamente sin esperar que se lo soliciten.',
+    'Escucha activamente sin interrumpir, demostrando interes genuino por la perspectiva ajena.',
+    'Trata con el mismo respeto a personas con estilos o creencias distintas, sin condescendencia.',
+    'Se abstiene de emitir juicios negativos sobre personas cuya conducta difiere de la suya.',
+    'Adapta su forma de comunicarse segun las necesidades emocionales del interlocutor.',
+    'Reconoce el esfuerzo y los logros de los demas de forma genuina, sin reducirlos a cifras.',
+    'Se muestra presente y disponible emocionalmente cuando alguien atraviesa una situacion dificil.',
+    'Antes de implementar decisiones, comunica el contexto y considera el impacto en las personas.'
+  ]},
+  { nombre:'Gestion de Relaciones', color:'#378ADD', items:[
+    'Sus decisiones sobre como tratar a cada persona se perciben como justas y contextualizadas.',
+    'Cuando una dinamica no funciona, toma iniciativa para conversarla en lugar de ignorarla.',
+    'Cuando una persona no cumple una expectativa, retoma la relacion de forma serena sin resentimiento.',
+    'Cuando una conducta afecta al equipo, la nombra directamente y de forma respetuosa.',
+    'Cuando una dinamica es disfuncional, actua para cambiarla o ponerle limites de forma clara.',
+    'Ajusta su nivel de apoyo segun las necesidades de cada persona, dando autonomia a quienes la han ganado.',
+    'Adapta su forma de relacionarse con cada persona segun como es realmente, sin insistir en cambiarla.',
+    'Invierte intencionalmente en relaciones clave: retroalimentacion, reconocimiento y construccion de confianza.'
+  ]}
+];
+
+function api(params, callback) {
+  var cbName = 'cb_' + (++cbCount) + '_' + Date.now();
+  var url = SCRIPT_URL + '?' + params + '&callback=' + cbName;
+  var timer = setTimeout(function() {
+    if (window[cbName]) { delete window[cbName]; callback(null); }
+  }, 15000);
+  window[cbName] = function(data) {
+    clearTimeout(timer);
+    delete window[cbName];
+    if (s.parentNode) s.parentNode.removeChild(s);
+    callback(data);
+  };
+  var s = document.createElement('script');
+  s.src = url;
+  s.onerror = function() {
+    clearTimeout(timer);
+    delete window[cbName];
+    if (s.parentNode) s.parentNode.removeChild(s);
+    callback(null);
+  };
+  document.head.appendChild(s);
+}
+
+function scoreColor(v){ return v>=4?'score-high':v>=3?'score-mid':'score-low'; }
+function fillColor(v){ return v>=4?'fill-high':v>=3?'fill-mid':'fill-low'; }
+
+function imprimirReporte() {
+  window.print();
+}
+
+window.onload = function() {
+  var today = new Date();
+  document.getElementById('fecha-gen').textContent = today.toLocaleDateString('es-GT',{year:'numeric',month:'long',day:'numeric'});
+  var params = new URLSearchParams(window.location.search);
+  var lid = params.get('lid');
+  if (!lid) { mostrarError('No se especifico un lider.'); return; }
+  api('action=getResumen&lid=' + encodeURIComponent(lid), function(data) {
+    if (!data || !data.ok) { mostrarError('No se encontraron datos para este lider.'); return; }
+    renderReporte(data.resumen);
+  });
+};
+
+function renderReporte(r) {
+  nombreLider = r.nombre;
+  document.getElementById('print-header-nombre').textContent = r.nombre + (r.empresa ? ' · ' + r.empresa : '');
+
+  var dims  = ['Autoconciencia','Autogestion','Conciencia Social','Gestion de Relaciones'];
+  var vals  = [r.prom_D1, r.prom_D2, r.prom_D3, r.prom_D4].map(function(v){ return parseFloat(v)||0; });
+  var items = r.item_promedios || [];
+  var maxIdx = vals.indexOf(Math.max.apply(null,vals));
+  var minIdx = vals.indexOf(Math.min.apply(null,vals));
+  var niveles = [
+    {key:'prom_superior',lbl:'Superior'},
+    {key:'prom_par',lbl:'Par'},
+    {key:'prom_subalterno',lbl:'Subalterno'},
+    {key:'prom_externo',lbl:'Externo'}
+  ];
+
+  var html = '';
+
+  // HERO
+  html += '<div class="lider-hero">';
+  html += '<div><div class="nombre">' + escHtml(r.nombre) + '</div>';
+  html += '<div class="sub">' + escHtml(r.empresa||'') + (r.email?' &nbsp;·&nbsp; '+escHtml(r.email):'') + '</div>';
+  html += '<div class="fecha-tag">' + r.n_evaluadores + ' evaluador' + (r.n_evaluadores!==1?'es':'') + ' participaron en esta evaluacion</div>';
+  html += '</div>';
+  html += '<div class="prom-badge"><div class="val">' + (parseFloat(r.prom_general)||0).toFixed(1) + '</div><div class="lbl">Promedio general</div></div>';
+  html += '</div>';
+
+  // STATS
+  html += '<div class="stats-grid">';
+  dims.forEach(function(d,i){
+    html += '<div class="stat-box"><div class="val '+scoreColor(vals[i])+'">'+vals[i].toFixed(1)+'</div><div class="lbl">'+d+'</div></div>';
+  });
+  html += '</div>';
+
+  // RADAR + BARRAS
+  html += '<div class="card">';
+  html += '<div class="card-title">Perfil por dimension</div>';
+  html += '<div class="radar-wrap"><canvas id="radar-canvas" role="img" aria-label="Grafica radial de las 4 dimensiones de IE"></canvas></div>';
+  html += '<div style="margin-top:28px">';
+  dims.forEach(function(d,i){
+    var pct = Math.round((vals[i]/5)*100);
+    html += '<div class="dim-bar-row"><div class="dim-bar-label">'+d+'</div><div class="dim-bar-track"><div class="dim-bar-fill '+fillColor(vals[i])+'" style="width:'+pct+'%"></div></div><div class="dim-bar-val '+scoreColor(vals[i])+'">'+vals[i].toFixed(1)+'</div></div>';
+  });
+  html += '</div>';
+  html += '<div style="margin-top:12px;padding:10px 14px;background:var(--bg);border-radius:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+  html += '<div style="font-size:12px;color:var(--text-soft)">Dimension mas alta: <strong style="color:var(--navy)">'+dims[maxIdx]+' ('+vals[maxIdx].toFixed(1)+')</strong></div>';
+  html += '<div style="font-size:12px;color:var(--text-soft)">Area de desarrollo: <strong style="color:var(--navy)">'+dims[minIdx]+' ('+vals[minIdx].toFixed(1)+')</strong></div>';
+  html += '</div></div>';
+
+  // POR NIVEL
+  html += '<div class="card"><div class="card-title">Promedio por nivel de relacion</div><div class="nivel-grid">';
+  niveles.forEach(function(n){
+    var v = parseFloat(r[n.key]);
+    var display = isNaN(v)||v===0?'<span class="nval empty">Sin datos</span>':'<span class="nval '+scoreColor(v)+'">'+v.toFixed(1)+'</span>';
+    html += '<div class="nivel-item"><span class="nlbl">'+n.lbl+'</span>'+display+'</div>';
+  });
+  html += '</div></div>';
+
+  // DETALLE POR DIMENSION
+  html += '<div class="card"><div class="card-title">Detalle por comportamiento</div>';
+  DIMS.forEach(function(dim,di){
+    var dimVal = vals[di];
+    var dimItems = items.slice(di*8, di*8+8);
+    html += '<div class="dim-section">';
+    html += '<table class="dim-table" id="dim-table-'+di+'">';
+    // Header row spanning all columns
+    html += '<thead><tr class="dim-table-header" onclick="toggleDim('+di+')">';
+    html += '<th colspan="3"><span class="dim-name">'+dim.nombre+'</span></th>';
+    html += '<th style="text-align:right;white-space:nowrap"><span class="dim-score">'+dimVal.toFixed(1)+'</span> <span class="dim-toggle" id="toggle-'+di+'">▲</span></th>';
+    html += '</tr></thead>';
+    html += '<tbody id="dim-items-'+di+'">';
+    dim.items.forEach(function(txt,bi){
+      var v = dimItems[bi]||0;
+      var pct = Math.round((v/5)*100);
+      html += '<tr class="dim-table-row">';
+      html += '<td class="td-num">'+(bi+1)+'</td>';
+      html += '<td class="td-text">'+txt+'</td>';
+      html += '<td class="td-bar"><div class="item-bar-track" style="width:60px"><div class="item-bar-fill '+fillColor(v)+'" style="width:'+pct+'%"></div></div></td>';
+      html += '<td class="td-score '+scoreColor(v)+'">'+v.toFixed(1)+'</td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+  });
+  html += '</div>';
+
+  // COMENTARIOS
+  html += '<div class="card"><div class="card-title">Oportunidades de mejora</div>';
+  var coms = r.comentarios || [];
+  var comsValidos = coms.filter(function(c){ return c.texto && c.texto.trim()!=='' && c.texto.trim().length>2; });
+  if (comsValidos.length===0) {
+    html += '<div class="sin-comentarios">No se registraron comentarios en esta evaluacion.</div>';
+  } else {
+    html += '<div class="comentarios-list">';
+    comsValidos.forEach(function(c){
+      html += '<div class="comentario-item"><div class="comentario-nivel">'+escHtml(c.nivel)+'</div><div class="comentario-texto">'+escHtml(c.texto)+'</div></div>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // ESCALA
+  html += '<div class="card" style="margin-bottom:32px"><div class="card-title">Escala de calificacion</div>';
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
+  var escala=[{v:'1.0-1.9',l:'Nunca / Casi nunca',c:'#FAECE7',t:'#993C1D'},{v:'2.0-2.9',l:'Pocas veces',c:'#FAEEDA',t:'#854F0B'},{v:'3.0-3.9',l:'Algunas veces',c:'#EAF3DE',t:'#3B6D11'},{v:'4.0-4.4',l:'Con frecuencia',c:'#E1F5EE',t:'#085041'},{v:'4.5-5.0',l:'Siempre',c:'#EEEDFE',t:'#3C3489'}];
+  escala.forEach(function(e){
+    html += '<div style="background:'+e.c+';color:'+e.t+';border-radius:8px;padding:8px 12px;font-size:12px"><strong>'+e.v+'</strong><br>'+e.l+'</div>';
+  });
+  html += '</div></div>';
+
+  document.getElementById('main-content').innerHTML = html;
+
+  radarChart = new Chart(document.getElementById('radar-canvas'),{
+    type:'radar',
+    data:{
+      labels:dims,
+      datasets:[
+        {label:'Referencia',data:[5,5,5,5],borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,0.08)',borderWidth:1.5,borderDash:[4,4],pointRadius:0},
+        {label:'Promedio',data:vals,borderColor:'#1a2744',backgroundColor:'rgba(26,39,68,0.15)',borderWidth:2.5,pointBackgroundColor:'#1a2744',pointRadius:6,pointHoverRadius:8}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.r.toFixed(1);}}}},
+      layout:{padding:{bottom:30}},scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:11},color:'#888',backdropColor:'transparent'},pointLabels:{font:{size:12},color:'#1a2744'},grid:{color:'rgba(0,0,0,0.08)'},angleLines:{color:'rgba(0,0,0,0.08)'}}}
+    }
+  });
+}
+
+function toggleDim(i){
+  var tbody = document.getElementById('dim-items-'+i);
+  var tog   = document.getElementById('toggle-'+i);
+  var hide  = tbody.style.display==='none';
+  tbody.style.display = hide ? 'table-row-group' : 'none';
+  tog.textContent = hide ? '▲' : '▼';
+}
+
+function mostrarError(msg){
+  document.getElementById('main-content').innerHTML='<div class="error-wrap"><h2>No se pudo cargar el reporte</h2><p>'+msg+'</p></div>';
+}
+
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>

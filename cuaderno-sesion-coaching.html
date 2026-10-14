@@ -1060,6 +1060,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="api.js"></script>
 <script>
 (function(){
   "use strict";
@@ -1072,7 +1073,7 @@
   //    getModulos, getParticipante, etc. — usamos su acción "appendRow" que ya existe).
   //    Mientras diga "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT", el registro se omite en silencio
   //    (no rompe nada — el guardado local sigue funcionando igual).
-  var SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxJv0SGNzokgigYiYr3oIe1AIglMnjwbC7iy-diwVbUXCjhRtKes-OrOYdS3yvp1Oqr/exec";
+  var SHEETS_WEBHOOK_URL = window.EQ.API_URL;
   // 2. Nombre de la pestaña en el spreadsheet del portal donde se registra cada finalización.
   var SHEETS_TAB_NAME = "actividades";
   // 3. Código de esta herramienta en tu inventario (EQ-H15 · Cuaderno de Sesión de Coaching).

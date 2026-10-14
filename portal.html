@@ -423,6 +423,7 @@
   </button>
 </nav>
 
+<script src="api.js"></script>
 <script type="module">
   import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut }
@@ -437,7 +438,7 @@
     appId:             "1:432414897669:web:4c817a7f128f9999f4ce6c"
   };
 
-  const API = "https://script.google.com/macros/s/AKfycbxJv0SGNzokgigYiYr3oIe1AIglMnjwbC7iy-diwVbUXCjhRtKes-OrOYdS3yvp1Oqr/exec";
+  const API = window.EQ.API_URL;
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -539,14 +540,14 @@
     document.getElementById("respSub").innerHTML = falt>0
       ? `Faltan <strong>${falt}</strong> respuestas para desbloquear tu informe`
       : `<strong style="color:#0F6E56">¡Mínimo alcanzado!</strong>`;
-    const link = lid ? `https://equilibriumlead.github.io/360-ie/evaluacion.html?lid=${lid}` : "—";
+    const link = lid ? `${window.EQ.BASE_URL}evaluacion.html?lid=${lid}` : "—";
     document.getElementById("linkEval").textContent = link;
     window._linkEval = link;
     const btn = document.getElementById("btnInforme");
     const aviso = document.getElementById("informeAviso");
     if (resp >= min) {
       btn.classList.replace("bloqueado-btn","activo");
-      btn.href = `https://equilibriumlead.github.io/360-ie/reporte.html?lid=${lid}`;
+      btn.href = `${window.EQ.BASE_URL}reporte.html?lid=${lid}`;
       aviso.style.display = "none";
     } else {
       btn.classList.replace("activo","bloqueado-btn");
@@ -598,7 +599,7 @@ async function cargarListaHerramientas() {
   const tbody = document.getElementById("tablaHerramientas");
   tbody.innerHTML = `<tr><td colspan="3" style="padding:24px;text-align:center;color:var(--text-sec);">Cargando...</td></tr>`;
   try {
-    const lista = await apiFetch("getListaHerramientas", { lider_id: estado.liderId });
+    const lista = await apiFetch("getListaHerramientas", { lider_id: estado.lider_id });
     const filas = Array.isArray(lista) ? lista : [];
     if (!filas.length) {
       tbody.innerHTML = `<tr><td colspan="3" style="padding:24px;text-align:center;color:var(--text-sec);">Aún no hay herramientas disponibles.</td></tr>`;

@@ -915,12 +915,13 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="api.js"></script>
 <script>
 (function(){
   "use strict";
 
   // ====== CONFIGURACIÓN: REGISTRO DE FINALIZACIÓN EN LA HOJA "actividades" ======
-  var SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxJv0SGNzokgigYiYr3oIe1AIglMnjwbC7iy-diwVbUXCjhRtKes-OrOYdS3yvp1Oqr/exec";
+  var SHEETS_WEBHOOK_URL = window.EQ.API_URL;
   var SHEETS_TAB_NAME = "actividades";
   var TOOL_CODE = "EQ-H10";
   function getParticipantCode(){
