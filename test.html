@@ -45,6 +45,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .q-text{font-size:16px;color:var(--navy);line-height:1.7;margin-bottom:28px;font-weight:400}
 .q-narrative{font-size:15px;color:var(--text-soft);line-height:1.7;margin-bottom:6px;font-style:italic}
 .q-ask{font-size:15px;color:var(--navy);line-height:1.6;margin-bottom:28px;font-weight:500}
+.scale-lead{font-size:12px;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
 .scale-wrap{display:flex;flex-direction:column;gap:10px}
 .scale-opt{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:var(--radius);border:1.5px solid var(--border);background:var(--white);cursor:pointer;transition:all .15s}
 .scale-opt:hover{border-color:var(--gold);background:rgba(201,168,76,0.05)}
@@ -137,7 +138,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div id="screen-welcome" class="screen active">
   <div class="welcome-wrap">
     <h2>Descubre tu perfil de Inteligencia Emocional</h2>
-    <p class="intro">Este test de diagnóstico te tomará aproximadamente <strong>5 minutos</strong>. A través de 20 comportamientos, explorarás tu nivel actual en las 4 dimensiones clave de la inteligencia emocional para líderes.</p>
+    <p class="intro">Este test de diagnóstico te tomará aproximadamente <strong>5 minutos</strong>. A través de 20 comportamientos, explorarás tu nivel actual en las 4 dimensiones clave de la inteligencia emocional para líderes. Responde pensando en cómo actúas realmente, no en cómo te gustaría actuar.</p>
     <div class="dims-preview">
       <div class="dim-chip"><div class="dc-name">Autoconciencia</div><div class="dc-def">Reconocer tus propias emociones y su impacto</div></div>
       <div class="dim-chip"><div class="dc-name">Autogestión</div><div class="dc-def">Gestionar tus emociones e impulsos</div></div>
@@ -160,7 +161,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div id="screen-test" class="screen">
   <div class="progress-wrap">
     <div class="progress-top">
-      <span id="prog-label">Pregunta 1 de 32</span>
+      <span id="prog-label">Pregunta 1 de 20</span>
       <span id="prog-pct">0%</span>
     </div>
     <div class="pbar"><div class="pfill" id="pfill" style="width:0%"></div></div>
@@ -194,11 +195,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 var SCRIPT_URL  = window.EQ.API_URL;
 var LANDING_URL = window.EQ.BASE_URL;
 
+// ── Escala de respuesta ──────────────────────────────────────────
+// Para ítems invertidos: puntos = (ESCALA_MAX + 1) - respuesta
+var ESCALA_MAX    = 4;
+var UMBRAL_ALTO   = 3.25;  // equivale a 4.0 en la escala anterior de 1 a 5
+var UMBRAL_MEDIO  = 2.5;   // equivale a 3.0 en la escala anterior de 1 a 5
+var OPCIONES = [
+  { v:1, l:'Nada' },
+  { v:2, l:'Poco' },
+  { v:3, l:'Bastante' },
+  { v:4, l:'Totalmente' }
+];
+
 var cbCount     = 0;
 var dimensiones = [];
 var scores      = [];
 var qActual     = 0;
-var totalQ      = 32;
+var totalQ      = 20;
 var userData    = {};
 var radarChart  = null;
 var allItems    = [];
@@ -230,6 +243,23 @@ function showScreen(name) {
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
   document.getElementById('screen-' + name).classList.add('active');
   window.scrollTo(0,0);
+}
+
+// Acepta true, "SI", "Sí", "si" desde la hoja
+function esInvertido(item) {
+  var v = item && item.invertido;
+  if (v === true) return true;
+  if (typeof v === 'string') {
+    var t = v.trim().toUpperCase();
+    return t === 'SI' || t === 'SÍ';
+  }
+  return false;
+}
+
+// Convierte la respuesta en puntos (los invertidos se puntúan al revés)
+function puntos(item, respuesta) {
+  if (!respuesta) return 0;
+  return esInvertido(item) ? (ESCALA_MAX + 1 - respuesta) : respuesta;
 }
 
 function iniciarTest() {
@@ -288,7 +318,7 @@ function renderQuestion(idx) {
   var isNarr = texto.indexOf('?') !== -1;
   var html   = '';
   html += '<div class="q-dim-badge">' + item.dimNombre + '</div>';
-  html += '<span class="q-type-badge">' + (isNarr ? 'Situación' : 'Afirmación') + '</span>';
+  html += '<span class="q-type-badge">' + (isNarr ? 'Situación' : 'Comportamiento') + '</span>';
 
   if (isNarr) {
     var qMark  = texto.lastIndexOf('?');
@@ -302,15 +332,9 @@ function renderQuestion(idx) {
     html += '<p class="q-text">' + texto + '</p>';
   }
 
-  var opciones = [
-    { v:1, l:'Nunca / Casi nunca' },
-    { v:2, l:'Pocas veces' },
-    { v:3, l:'Algunas veces' },
-    { v:4, l:'Con frecuencia' },
-    { v:5, l:'Siempre / Casi siempre' }
-  ];
+  html += '<div class="scale-lead">Esto me describe:</div>';
   html += '<div class="scale-wrap">';
-  opciones.forEach(function(o){
+  OPCIONES.forEach(function(o){
     var cls = sel === o.v ? 'scale-opt selected' : 'scale-opt';
     html += '<div class="' + cls + '" onclick="selectOpt(' + dimIdx + ',' + biIdx + ',' + o.v + ',' + idx + ')">';
     html += '<div class="opt-num">' + o.v + '</div>';
@@ -351,7 +375,8 @@ function enviarTest() {
   params += '&empresa='+ encodeURIComponent(userData.empresa);
   dimensiones.forEach(function(dim, d) {
     dim.items.forEach(function(item, b) {
-      params += '&D'+(d+1)+'B'+(b+1)+'=' + (scores[d][b] || 0);
+      // Se envían los PUNTOS ya convertidos (invertidos al revés)
+      params += '&D'+(d+1)+'B'+(b+1)+'=' + puntos(item, scores[d][b]);
     });
   });
   api(params, function(data) {
@@ -364,11 +389,12 @@ function enviarTest() {
   });
 }
 
-function scoreColor(v){ return v>=4?'score-high':v>=3?'score-mid':'score-low'; }
-function fillClass(v){ return v>=4?'fill-high':v>=3?'fill-mid':'fill-low'; }
+function nivelDe(v){ return v>=UMBRAL_ALTO?'alto':v>=UMBRAL_MEDIO?'medio':'bajo'; }
+function scoreColor(v){ var n=nivelDe(v); return n==='alto'?'score-high':n==='medio'?'score-mid':'score-low'; }
+function fillClass(v){ var n=nivelDe(v); return n==='alto'?'fill-high':n==='medio'?'fill-mid':'fill-low'; }
 
 function interpretacion(dimNombre, v) {
-  var nivel = v >= 4 ? 'alto' : v >= 3 ? 'medio' : 'bajo';
+  var nivel = nivelDe(v);
   var textos = {
     'Autoconciencia': {
       alto:  'Tienes una sólida capacidad para reconocer tus emociones y su impacto. Este nivel de autoconciencia es una fortaleza fundamental que potencia todas tus otras habilidades de liderazgo.',
@@ -401,19 +427,20 @@ function renderResultados(data) {
   var vals   = [data.prom_D1, data.prom_D2, data.prom_D3, data.prom_D4].map(function(v){ return parseFloat(v)||0; });
   var maxIdx = vals.indexOf(Math.max.apply(null,vals));
   var minIdx = vals.indexOf(Math.min.apply(null,vals));
+  var maxTxt = ESCALA_MAX.toFixed(1);
 
   var html = '';
 
   // HERO
   html += '<div class="results-hero">';
   html += '<div><div class="rh-name">' + escHtml(userData.nombre) + '</div><div class="rh-sub">' + escHtml(userData.empresa) + '</div></div>';
-  html += '<div class="rh-badge"><div class="val">' + (parseFloat(data.prom_general)||0).toFixed(1) + '</div><div class="lbl">Promedio IE</div></div>';
+  html += '<div class="rh-badge"><div class="val">' + (parseFloat(data.prom_general)||0).toFixed(1) + '</div><div class="lbl">Promedio IE / ' + maxTxt + '</div></div>';
   html += '</div>';
 
   // HIGHLIGHTS
   html += '<div class="highlight-grid">';
-  html += '<div class="highlight-box strength"><div class="hb-label">Tu fortaleza</div><div class="hb-dim">' + dims[maxIdx] + '</div><div class="hb-score">' + vals[maxIdx].toFixed(1) + ' / 5.0</div></div>';
-  html += '<div class="highlight-box develop"><div class="hb-label">Área de desarrollo</div><div class="hb-dim">' + dims[minIdx] + '</div><div class="hb-score">' + vals[minIdx].toFixed(1) + ' / 5.0</div></div>';
+  html += '<div class="highlight-box strength"><div class="hb-label">Tu fortaleza</div><div class="hb-dim">' + dims[maxIdx] + '</div><div class="hb-score">' + vals[maxIdx].toFixed(1) + ' / ' + maxTxt + '</div></div>';
+  html += '<div class="highlight-box develop"><div class="hb-label">Área de desarrollo</div><div class="hb-dim">' + dims[minIdx] + '</div><div class="hb-score">' + vals[minIdx].toFixed(1) + ' / ' + maxTxt + '</div></div>';
   html += '</div>';
 
   // RADAR
@@ -422,7 +449,7 @@ function renderResultados(data) {
   html += '<div class="radar-wrap"><canvas id="radar-canvas" role="img" aria-label="Gráfica radial con tu perfil de inteligencia emocional"></canvas></div>';
   html += '<div style="margin-top:20px">';
   dims.forEach(function(d,i){
-    var pct = Math.round((vals[i]/5)*100);
+    var pct = Math.round((vals[i]/ESCALA_MAX)*100);
     html += '<div class="dim-result-row"><div class="drl-name">'+d+'</div><div class="drl-track"><div class="drl-fill '+fillClass(vals[i])+'" style="width:'+pct+'%"></div></div><div class="drl-val '+scoreColor(vals[i])+'">'+vals[i].toFixed(1)+'</div></div>';
   });
   html += '</div></div>';
@@ -430,10 +457,11 @@ function renderResultados(data) {
   // INTERPRETACION
   html += '<div class="card"><div class="section-title">Qué significa tu resultado</div>';
   dims.forEach(function(d,i){
-    var nivel = vals[i]>=4?'Alto':vals[i]>=3?'En desarrollo':'Área de oportunidad';
+    var n = nivelDe(vals[i]);
+    var nivel = n==='alto'?'Alto':n==='medio'?'En desarrollo':'Área de oportunidad';
     html += '<div class="interp-item">';
     html += '<div class="interp-dim">'+d+'</div>';
-    html += '<div class="interp-score '+scoreColor(vals[i])+'">'+vals[i].toFixed(1)+' / 5.0 &nbsp;·&nbsp; '+nivel+'</div>';
+    html += '<div class="interp-score '+scoreColor(vals[i])+'">'+vals[i].toFixed(1)+' / '+maxTxt+' &nbsp;·&nbsp; '+nivel+'</div>';
     html += '<div class="interp-text">'+interpretacion(d, vals[i])+'</div>';
     html += '</div>';
   });
@@ -452,19 +480,20 @@ function renderResultados(data) {
   document.getElementById('results-content').innerHTML = html;
   showScreen('results');
 
+  var referencia = dims.map(function(){ return ESCALA_MAX; });
   radarChart = new Chart(document.getElementById('radar-canvas'), {
     type:'radar',
     data:{
       labels: dims,
       datasets:[
-        {label:'Referencia',data:[5,5,5,5],borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,0.08)',borderWidth:1.5,borderDash:[4,4],pointRadius:0},
+        {label:'Referencia',data:referencia,borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,0.08)',borderWidth:1.5,borderDash:[4,4],pointRadius:0},
         {label:'Tu perfil',data:vals,borderColor:'#1a2744',backgroundColor:'rgba(26,39,68,0.15)',borderWidth:2.5,pointBackgroundColor:'#1a2744',pointRadius:5}
       ]
     },
     options:{
       responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.r.toFixed(1);}}}},
-      scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:10},color:'#888',backdropColor:'transparent'},pointLabels:{font:{size:11},color:'#1a2744'},grid:{color:'rgba(0,0,0,0.08)'},angleLines:{color:'rgba(0,0,0,0.08)'}}}
+      scales:{r:{min:0,max:ESCALA_MAX,ticks:{stepSize:1,font:{size:10},color:'#888',backdropColor:'transparent'},pointLabels:{font:{size:11},color:'#1a2744'},grid:{color:'rgba(0,0,0,0.08)'},angleLines:{color:'rgba(0,0,0,0.08)'}}}
     }
   });
 }
