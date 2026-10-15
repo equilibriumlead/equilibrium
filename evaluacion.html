@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Evaluación 360 - Inteligencia Emocional</title>
+<style>
+:root{--navy:#1a2744;--gold:#C9A84C;--gold-light:#F5E6C0;--bg:#F7F8FA;--white:#ffffff;--text:#1a2744;--text-soft:#5a6580;--border:#e2e6ef;--radius:12px;--shadow:0 2px 12px rgba(26,39,68,0.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.header{background:var(--navy);padding:20px 20px 16px;text-align:center}
+.header h1{color:var(--gold);font-size:15px;font-weight:600;letter-spacing:.5px;margin-bottom:4px}
+.header p{color:rgba(255,255,255,0.7);font-size:12px}
+.wrap{max-width:600px;margin:0 auto}
+.lider-card{background:var(--gold-light);border-left:4px solid var(--gold);margin:16px;padding:12px 14px;border-radius:var(--radius)}
+.lider-card .label{font-size:11px;color:var(--text-soft);margin-bottom:3px}
+.lider-card .nombre{font-size:17px;font-weight:700;color:var(--navy)}
+.lider-card .empresa{font-size:13px;color:var(--text-soft);margin-top:2px}
+.screen{display:none}
+.screen.active{display:block}
+.welcome-body{padding:20px 16px}
+.welcome-body h2{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.welcome-body p{font-size:14px;color:var(--text-soft);line-height:1.6;margin-bottom:16px}
+.instr-list{list-style:none;padding:0;margin-bottom:24px}
+.instr-list li{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--text-soft);margin-bottom:10px;line-height:1.5}
+.instr-list li span.num{background:var(--navy);color:var(--white);border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:1px}
+.relacion-label{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:10px}
+.relacion-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px}
+.rel-btn{padding:12px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--white);font-size:13px;font-weight:500;color:var(--text-soft);cursor:pointer;text-align:center;transition:all .15s}
+.rel-btn.selected{border-color:var(--navy);background:var(--navy);color:var(--white)}
+/* Progreso */
+.progress-wrap{padding:12px 16px;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+.progress-top{display:flex;justify-content:space-between;font-size:12px;color:var(--text-soft);margin-bottom:6px}
+.pbar{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.pfill{height:100%;background:var(--gold);border-radius:3px;transition:width .3s}
+/* Comportamiento */
+.q-wrap{padding:24px 16px 110px}
+.q-lider{font-size:12px;color:var(--text-soft);margin-bottom:14px}
+.q-lider strong{color:var(--navy)}
+.q-text{font-size:17px;color:var(--navy);line-height:1.6;margin-bottom:24px;min-height:80px}
+.q-lead{font-size:12px;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.scale-wrap{display:flex;flex-direction:column;gap:10px}
+.scale-opt{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--radius);border:1.5px solid var(--border);background:var(--white);cursor:pointer;transition:all .15s;font-size:14px;color:var(--text-soft);text-align:left;width:100%;font-family:inherit}
+.scale-opt:hover{border-color:var(--gold);background:rgba(201,168,76,0.05)}
+.scale-opt.selected{border-color:var(--navy);background:rgba(26,39,68,0.06);color:var(--navy);font-weight:600}
+.scale-opt .dot{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;transition:all .15s}
+.scale-opt.selected .dot{border-color:var(--navy);background:var(--navy);box-shadow:inset 0 0 0 3px var(--white)}
+.scale-na{margin-top:6px;border-style:dashed}
+.scale-na.selected{border-style:solid}
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);padding:12px 16px}
+.nav-inner{max-width:600px;margin:0 auto;display:flex;gap:10px}
+.btn-nav{flex:1;padding:13px;border-radius:var(--radius);border:1.5px solid var(--border);font-size:14px;font-weight:600;cursor:pointer;background:var(--white);color:var(--text-soft);transition:all .15s}
+.btn-nav:hover{border-color:var(--navy);color:var(--navy)}
+.btn-nav.primary{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.btn-nav.primary:disabled{background:var(--border);border-color:var(--border);color:var(--text-soft);cursor:not-allowed}
+/* Comentarios y estados */
+.comments-wrap{margin:0 16px 24px}
+.comments-wrap label{font-size:14px;font-weight:600;color:var(--navy);display:block;margin-bottom:6px}
+.comments-wrap p{font-size:12px;color:var(--text-soft);margin-bottom:10px;line-height:1.5}
+.comments-wrap textarea{width:100%;min-height:100px;padding:10px 12px;border-radius:var(--radius);border:1.5px solid var(--border);font-size:13px;color:var(--text);background:var(--white);resize:vertical;font-family:inherit;line-height:1.6}
+.comments-wrap textarea:focus{outline:none;border-color:var(--navy)}
+.btn-wrap{padding:0 16px 32px}
+.btn-primary{width:100%;padding:15px;border-radius:var(--radius);border:none;background:var(--navy);color:var(--white);font-size:15px;font-weight:600;cursor:pointer;transition:background .15s}
+.btn-primary:hover{background:#253660}
+.btn-primary:disabled{background:var(--border);color:var(--text-soft);cursor:not-allowed}
+.btn-back{width:100%;padding:12px;border-radius:var(--radius);border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-size:14px;cursor:pointer;margin-bottom:10px}
+.loading{text-align:center;padding:60px 20px}
+.loading .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{font-size:14px;color:var(--text-soft)}
+.error-screen{padding:40px 20px;text-align:center}
+.error-screen .icon{font-size:48px;margin-bottom:16px}
+.error-screen h2{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.error-screen p{font-size:14px;color:var(--text-soft);line-height:1.6}
+.success-screen{padding:40px 20px;text-align:center}
+.success-screen .icon{font-size:56px;margin-bottom:20px}
+.success-screen h2{font-size:22px;font-weight:700;color:var(--navy);margin-bottom:10px}
+.success-screen p{font-size:14px;color:var(--text-soft);line-height:1.7;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>EVALUACIÓN 360 - INTELIGENCIA EMOCIONAL</h1>
+<p>Instrumento de Evaluación para Líderes</p>
+</div>
+
+<div id="screen-loading" class="screen active">
+<div class="loading"><div class="spinner"></div><p>Cargando evaluación...</p></div>
+</div>
+
+<div id="screen-error" class="screen">
+<div class="error-screen">
+<div class="icon">&#9888;</div>
+<h2>Enlace no válido</h2>
+<p>Este enlace no es válido o ha expirado. Contacte al administrador.</p>
+</div>
+</div>
+
+<div id="screen-welcome" class="screen">
+<div class="wrap">
+<div class="lider-card" style="margin-top:16px">
+<div class="label">LÍDER A EVALUAR</div>
+<div class="nombre" id="lider-nombre"></div>
+<div class="empresa" id="lider-empresa"></div>
+</div>
+<div class="welcome-body">
+<h2>Bienvenido/a</h2>
+<p>Su participación es fundamental para el desarrollo del líder. Sus respuestas son <strong>confidenciales</strong>: el líder no verá respuestas individuales.</p>
+<ul class="instr-list">
+<li><span class="num">1</span>Indique su nivel de relación con el líder evaluado.</li>
+<li><span class="num">2</span>Piense en lo que ha observado en los <strong>últimos tres meses</strong>, no en la impresión general que tiene de la persona.</li>
+<li><span class="num">3</span>Verá un comportamiento a la vez. Indique cuánto describe a la persona: Nada, Poco, Bastante o Totalmente. Algunos describen conductas positivas y otros conductas a mejorar; léalos con atención.</li>
+<li><span class="num">4</span>Si no ha tenido oportunidad de observar un comportamiento, elija <strong>"No lo he observado"</strong>. No afecta el resultado.</li>
+<li><span class="num">5</span>Al final podrá agregar comentarios. La evaluación toma aproximadamente 10 minutos.</li>
+</ul>
+<div class="relacion-label">¿Cuál es su relación con este líder?</div>
+<div class="relacion-grid">
+<button class="rel-btn" onclick="selectRelacion('Superior', this)">Superior</button>
+<button class="rel-btn" onclick="selectRelacion('Par', this)">Par</button>
+<button class="rel-btn" onclick="selectRelacion('Subalterno', this)">Subalterno</button>
+<button class="rel-btn" onclick="selectRelacion('Externo', this)">Externo</button>
+</div>
+</div>
+<div class="btn-wrap">
+<button class="btn-primary" id="btn-iniciar" onclick="iniciarEval()" disabled>Iniciar evaluación</button>
+</div>
+</div>
+</div>
+
+<div id="screen-test" class="screen">
+<div class="progress-wrap">
+<div class="wrap">
+<div class="progress-top">
+<span id="prog-label">Comportamiento 1 de 32</span>
+<span id="prog-pct">0%</span>
+</div>
+<div class="pbar"><div class="pfill" id="pfill" style="width:0%"></div></div>
+</div>
+</div>
+<div class="wrap">
+<div class="q-wrap" id="q-wrap"></div>
+</div>
+<div class="nav-bar">
+<div class="nav-inner">
+<button class="btn-nav" id="btn-prev" onclick="navPrev()">← Anterior</button>
+<button class="btn-nav primary" id="btn-next" onclick="navNext()" disabled>Siguiente →</button>
+</div>
+</div>
+</div>
+
+<div id="screen-comments" class="screen">
+<div class="wrap">
+<div class="lider-card" style="margin-top:16px">
+<div class="label">EVALUANDO A</div>
+<div class="nombre" id="lider-nombre-com"></div>
+</div>
+<div style="padding:20px 16px 8px">
+<div style="font-size:13px;color:var(--text-soft);background:#EEEDFE;border-radius:10px;padding:10px 12px">
+Ha completado todos los comportamientos. Un último paso:
+</div>
+</div>
+<div class="comments-wrap" style="margin-top:16px">
+<label>Oportunidades de mejora específicas</label>
+<p>Comparta observaciones concretas. Su respuesta es confidencial y anónima.</p>
+<textarea id="comentarios" placeholder="Escriba aquí sus observaciones..."></textarea>
+</div>
+<div class="btn-wrap">
+<button class="btn-back" onclick="volverAlUltimo()">Volver</button>
+<button class="btn-primary" onclick="enviarEvaluacion()">Enviar evaluación</button>
+</div>
+</div>
+</div>
+
+<div id="screen-sending" class="screen">
+<div class="loading"><div class="spinner"></div><p>Enviando su evaluación...</p></div>
+</div>
+
+<div id="screen-success" class="screen">
+<div class="success-screen">
+<div class="icon">&#127881;</div>
+<h2>Evaluación enviada</h2>
+<p>Gracias por su participación.</p>
+<p>Sus respuestas han sido registradas de forma confidencial.</p>
+<p style="margin-top:16px;font-size:13px;color:var(--text-soft)">Puede cerrar esta ventana.</p>
+</div>
+</div>
+
+<script src="api.js"></script>
+<script>
+var SCRIPT_URL = window.EQ.API_URL;
+
+// ── Escala ───────────────────────────────────────────────────────
+// Respuestas: 1-4. "No lo he observado" = 0 (el backend descarta los ceros).
+// Ítems invertidos: puntos = (ESCALA_MAX + 1) - respuesta.
+var ESCALA_MAX = 4;
+var OPCIONES = [
+  { v:1, l:'Nada' },
+  { v:2, l:'Poco' },
+  { v:3, l:'Bastante' },
+  { v:4, l:'Totalmente' }
+];
+var PAUSA_AVANCE = 300; // milisegundos antes de pasar al siguiente
+
+var lid = '';
+var liderData = {};
+var nivelRelacion = '';
+var dimensiones = [];
+var orden = [];        // ítems en orden aleatorio: {d, b, texto, invertido}
+var respuestas = {};   // clave "d_b" -> 0..4 (0 = no lo he observado)
+var qActual = 0;
+var avanzando = false; // evita dobles toques durante la pausa
+
+window.onload = function() {
+  var params = new URLSearchParams(window.location.search);
+  lid = params.get('lid');
+  if (!lid) { showScreen('error'); return; }
+
+  Promise.all([
+    fetch(SCRIPT_URL + '?action=getLider&lid=' + encodeURIComponent(lid)).then(function(r){ return r.json(); }),
+    fetch(SCRIPT_URL + '?action=getComportamientos').then(function(r){ return r.json(); })
+  ])
+  .then(function(results) {
+    var lider = results[0];
+    var comps = results[1];
+    if (!lider.ok || !comps.ok) { showScreen('error'); return; }
+    liderData = lider;
+    dimensiones = comps.dimensiones;
+    construirOrden();
+    document.getElementById('lider-nombre').textContent = lider.nombre;
+    document.getElementById('lider-empresa').textContent = lider.empresa || '';
+    document.getElementById('lider-nombre-com').textContent = lider.nombre;
+    showScreen('welcome');
+  })
+  .catch(function() { showScreen('error'); });
+};
+
+// Acepta true, "SI", "Sí", "si" desde la hoja
+function esInvertido(item) {
+  var v = item && item.invertido;
+  if (v === true) return true;
+  if (typeof v === 'string') {
+    var t = v.trim().toUpperCase();
+    return t === 'SI' || t === 'SÍ';
+  }
+  return false;
+}
+
+// Junta todos los ítems y los mezcla al azar (Fisher-Yates)
+function construirOrden() {
+  orden = [];
+  dimensiones.forEach(function(dim, d) {
+    dim.items.forEach(function(item, b) {
+      orden.push({ d: d, b: b, texto: item.texto, invertido: esInvertido(item) });
+    });
+  });
+  for (var i = orden.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = orden[i]; orden[i] = orden[j]; orden[j] = tmp;
+  }
+}
+
+function clave(it) { return it.d + '_' + it.b; }
+function respondido(it) { return respuestas.hasOwnProperty(clave(it)); }
+
+function showScreen(name) {
+  var screens = document.querySelectorAll('.screen');
+  for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
+  document.getElementById('screen-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function selectRelacion(rel, btn) {
+  nivelRelacion = rel;
+  var btns = document.querySelectorAll('.rel-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('selected');
+  btn.classList.add('selected');
+  document.getElementById('btn-iniciar').disabled = false;
+}
+
+function iniciarEval() {
+  qActual = 0;
+  renderQuestion(0);
+  showScreen('test');
+}
+
+function renderQuestion(idx) {
+  var it  = orden[idx];
+  var sel = respondido(it) ? respuestas[clave(it)] : null;
+  var hechos = orden.filter(respondido).length;
+  var pct = Math.round((hechos / orden.length) * 100);
+
+  document.getElementById('prog-label').textContent = 'Comportamiento ' + (idx + 1) + ' de ' + orden.length;
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('pfill').style.width = pct + '%';
+  document.getElementById('btn-prev').textContent = idx === 0 ? '← Inicio' : '← Anterior';
+  var btnNext = document.getElementById('btn-next');
+  btnNext.disabled = sel === null;
+  btnNext.textContent = idx === orden.length - 1 ? 'Continuar →' : 'Siguiente →';
+
+  var html = '';
+  html += '<div class="q-lider">Evaluando a <strong>' + escHtml(liderData.nombre || '') + '</strong></div>';
+  html += '<p class="q-text">' + it.texto + '</p>';
+  html += '<div class="q-lead">Esto describe a esta persona:</div>';
+  html += '<div class="scale-wrap">';
+  OPCIONES.forEach(function(o) {
+    html += '<button class="scale-opt' + (sel === o.v ? ' selected' : '') + '" onclick="elegir(' + o.v + ')"><span class="dot"></span>' + o.l + '</button>';
+  });
+  html += '<button class="scale-opt scale-na' + (sel === 0 ? ' selected' : '') + '" onclick="elegir(0)"><span class="dot"></span>No lo he observado</button>';
+  html += '</div>';
+
+  document.getElementById('q-wrap').innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+// Guarda la respuesta, la muestra marcada y avanza solo tras una breve pausa
+function elegir(val) {
+  if (avanzando) return;
+  respuestas[clave(orden[qActual])] = val;
+  renderQuestion(qActual);
+  avanzando = true;
+  setTimeout(function() {
+    avanzando = false;
+    avanzar();
+  }, PAUSA_AVANCE);
+}
+
+function avanzar() {
+  if (qActual < orden.length - 1) {
+    qActual++;
+    renderQuestion(qActual);
+  } else {
+    showScreen('comments');
+  }
+}
+
+function navNext() {
+  if (avanzando || !respondido(orden[qActual])) return;
+  avanzar();
+}
+
+function navPrev() {
+  if (avanzando) return;
+  if (qActual > 0) { qActual--; renderQuestion(qActual); }
+  else showScreen('welcome');
+}
+
+function volverAlUltimo() {
+  qActual = orden.length - 1;
+  renderQuestion(qActual);
+  showScreen('test');
+}
+
+// Convierte la respuesta en puntos: 0 se queda en 0; los invertidos se puntúan al revés
+function puntos(it) {
+  var r = respuestas[clave(it)];
+  if (!r) return 0;
+  return it.invertido ? (ESCALA_MAX + 1 - r) : r;
+}
+
+function enviarEvaluacion() {
+  // Seguridad: confirma que no falte ninguna respuesta
+  var faltante = -1;
+  for (var i = 0; i < orden.length; i++) { if (!respondido(orden[i])) { faltante = i; break; } }
+  if (faltante !== -1) {
+    alert('Falta responder el comportamiento ' + (faltante + 1) + '.');
+    qActual = faltante; renderQuestion(qActual); showScreen('test');
+    return;
+  }
+
+  showScreen('sending');
+  var url = SCRIPT_URL + '?action=guardarRespuesta&lid=' + encodeURIComponent(lid) +
+            '&nivel_relacion=' + encodeURIComponent(nivelRelacion) +
+            '&comentarios=' + encodeURIComponent(document.getElementById('comentarios').value);
+  // Cada respuesta vuelve a su casilla original D#B#, sin importar el orden en que se mostró
+  orden.forEach(function(it) {
+    url += '&D' + (it.d + 1) + 'B' + (it.b + 1) + '=' + puntos(it);
+  });
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.ok) showScreen('success');
+      else { alert('Error: ' + data.error); showScreen('comments'); }
+    })
+    .catch(function() { alert('Error de conexión. Intente nuevamente.'); showScreen('comments'); });
+}
+
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>
